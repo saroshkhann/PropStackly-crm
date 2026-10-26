@@ -1,0 +1,95 @@
+# Node dependencies
+node_modules/
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Next.js build artifacts
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+coverage/
+.pytest_cache/
+*.pytest_cache/
+__pycache__/
+*.py[cod]
+*$py.class
+htmlcov/
+
+# Python Virtual Environments
+venv/
+backend/venv/
+env/
+.env_venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment files & Secrets (NEVER PUSH REAL SECRETS)
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+**/backend/.env
+**/backend/.env.*
+# Keep safe documentation templates
+!.env.example
+!**/.env.example
+
+# Local SQLite databases & temporary logs
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.sqlite
+**/*.sqlite3
+backend/inquiries_log.json
+inquiries_log.json
+
+# User uploaded files / media
+uploads/
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Private keys, certificates, secrets
+*.pem
+*.key
+*.cert
+*.crt
+id_rsa
+id_rsa.pub
+*.pfx
+*.p12
+
+# Large distribution zip packages
+*.zip
+*.tar.gz
+*.tgz
+
+# Operating System & Editor Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log

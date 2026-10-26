@@ -1,0 +1,135 @@
+{
+  "name": "PropStackly CRM -> Meta WhatsApp Business Platform",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "propstackly-new-lead",
+        "responseMode": "onReceived",
+        "responseData": "allEntries",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "1",
+      "name": "PropStackly Lead Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "propstackly-new-lead"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Validate HMAC-SHA256 Signature\nconst crypto = require('crypto');\nconst rawBody = $input.item.binary?.data ? Buffer.from($input.item.binary.data, 'base64').toString('utf8') : JSON.stringify($input.item.json);\n\n// Retrieve secret from environment variable or node config\nconst secret = $env.PROPSTACKLY_WEBHOOK_SECRET || 'your_agency_webhook_secret';\nconst receivedSig = $input.item.headers['x-propstackly-signature'] || $input.item.headers['x-veltrivo-signature'];\n\nif (receivedSig) {\n  const expectedSig = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBody).digest('hex');\n  if (receivedSig !== expectedSig) {\n    throw new Error('HMAC signature mismatch: Unauthorized request');\n  }\n}\n\n// Return formatted lead parameters\nconst body = $input.item.json;\nreturn [{\n  json: {\n    lead_id: body.lead?.id,\n    agency_id: body.agency?.id,\n    event_id: body.event_id,\n    lead_name: body.lead?.name || 'Valued Client',\n    phone: body.whatsapp_config?.recipient_phone || body.lead?.phone,\n    template_name: body.whatsapp_config?.template_name || 'welcome_lead_intro',\n    components: body.whatsapp_config?.components || []\n  }\n}];"
+      },
+      "id": "2",
+      "name": "Verify HMAC Signature & Format Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v21.0/{{$env.WHATSAPP_PHONE_NUMBER_ID}}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.META_WHATSAPP_SYSTEM_USER_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"recipient_type\": \"individual\",\n  \"to\": \"{{$json.phone}}\",\n  \"type\": \"template\",\n  \"template\": {\n    \"name\": \"{{$json.template_name}}\",\n    \"language\": {\n      \"code\": \"en_US\"\n    },\n    \"components\": {{$json.components}}\n  }\n}"
+      },
+      "id": "3",
+      "name": "Meta WhatsApp Cloud API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=http://127.0.0.1:8000/api/v1/automations/webhooks/n8n/callback?agency_id={{$('Verify HMAC Signature & Format Payload').item.json.agency_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"lead_id\": \"{{$('Verify HMAC Signature & Format Payload').item.json.lead_id}}\",\n  \"status\": \"delivered\",\n  \"provider_message_id\": \"{{$json.messages[0].id}}\",\n  \"recipient_phone\": \"{{$('Verify HMAC Signature & Format Payload').item.json.phone}}\",\n  \"template_name\": \"{{$('Verify HMAC Signature & Format Payload').item.json.template_name}}\"\n}"
+      },
+      "id": "4",
+      "name": "PropStackly Callback Confirmation",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        960,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "PropStackly Lead Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Verify HMAC Signature & Format Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify HMAC Signature & Format Payload": {
+      "main": [
+        [
+          {
+            "node": "Meta WhatsApp Cloud API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meta WhatsApp Cloud API": {
+      "main": [
+        [
+          {
+            "node": "PropStackly Callback Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
