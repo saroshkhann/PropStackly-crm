@@ -81,71 +81,73 @@ function FollowUpsContent() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pt-1">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
-            Follow-ups & Reminders
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
-            <span>{pendingCount} follow-ups scheduled</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+            <span>Client Relationship Management</span>
             <span>•</span>
-            <span>Consistent phone calls, WhatsApp updates & site visit confirmations.</span>
-            <span className="text-[#EE6427] font-bold">✨</span>
+            <span className="text-amber-600 font-bold">{pendingCount} Follow-ups Due</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-950 dark:text-slate-100 tracking-tight">
+            Follow-up Schedule
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Stay consistent across phone calls, WhatsApp updates, and documentation transfers
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center p-0.5 bg-slate-100 dark:bg-slate-800 border border-black/[0.04] dark:border-white/[0.06] rounded-xl text-xs overflow-x-auto">
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-xs overflow-x-auto">
             <button
               onClick={() => setTimelineFilter("today")}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                timelineFilter === "today" ? "bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xs" : "text-slate-500 hover:text-slate-900"
+              className={`px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 ${
+                timelineFilter === "today" ? "bg-amber-500 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
               <span>Due Today</span>
-              <span className={`px-1.5 py-0.2 rounded-md text-[10px] ${timelineFilter === "today" ? "bg-amber-100 dark:bg-amber-950 text-amber-800" : "bg-slate-200 dark:bg-slate-700 text-slate-600"}`}>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${timelineFilter === "today" ? "bg-amber-600 text-white" : "bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300"}`}>
                 {todayList.length}
               </span>
             </button>
             <button
               onClick={() => setTimelineFilter("overdue")}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                timelineFilter === "overdue" ? "bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xs" : "text-slate-500 hover:text-slate-900"
+              className={`px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 ${
+                timelineFilter === "overdue" ? "bg-rose-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
               <span>Overdue</span>
-              <span className={`px-1.5 py-0.2 rounded-md text-[10px] ${timelineFilter === "overdue" ? "bg-rose-100 dark:bg-rose-950 text-rose-800" : "bg-slate-200 dark:bg-slate-700 text-slate-600"}`}>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${timelineFilter === "overdue" ? "bg-rose-700 text-white" : "bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300"}`}>
                 {overdueList.length}
               </span>
             </button>
             <button
               onClick={() => setTimelineFilter("upcoming")}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                timelineFilter === "upcoming" ? "bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xs" : "text-slate-500 hover:text-slate-900"
+              className={`px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 ${
+                timelineFilter === "upcoming" ? "bg-[#EE6427] text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
               <span>Upcoming</span>
-              <span className={`px-1.5 py-0.2 rounded-md text-[10px] ${timelineFilter === "upcoming" ? "bg-orange-100 dark:bg-orange-950 text-orange-800" : "bg-slate-200 dark:bg-slate-700 text-slate-600"}`}>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${timelineFilter === "upcoming" ? "bg-[#DE5518] text-white" : "bg-orange-100 dark:bg-orange-950/50 text-orange-950 dark:text-orange-200"}`}>
                 {upcomingList.length}
               </span>
             </button>
             <button
               onClick={() => setTimelineFilter("completed")}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all flex items-center gap-1.5 cursor-pointer ${
-                timelineFilter === "completed" ? "bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xs" : "text-slate-500 hover:text-slate-900"
+              className={`px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1.5 ${
+                timelineFilter === "completed" ? "bg-emerald-600 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
               <span>Completed</span>
-              <span className={`px-1.5 py-0.2 rounded-md text-[10px] ${timelineFilter === "completed" ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800" : "bg-slate-200 dark:bg-slate-700 text-slate-600"}`}>
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${timelineFilter === "completed" ? "bg-emerald-700 text-white" : "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"}`}>
                 {completedList.length}
               </span>
             </button>
             <button
               onClick={() => setTimelineFilter("all")}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer ${
-                timelineFilter === "all" ? "bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xs" : "text-slate-500 hover:text-slate-900"
+              className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
+                timelineFilter === "all" ? "bg-slate-900 dark:bg-slate-800 text-white" : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
               All ({followUps.length})
@@ -154,10 +156,10 @@ function FollowUpsContent() {
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-white bg-slate-950 dark:bg-white dark:text-slate-950 hover:bg-slate-800 rounded-xl shadow-xs transition-all cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#EE6427] hover:bg-[#DE5518] rounded-lg shadow-sm transition-colors cursor-pointer"
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>+ Schedule Follow-up</span>
+            <Plus className="w-4 h-4" />
+            + New Follow-up
           </button>
         </div>
       </div>

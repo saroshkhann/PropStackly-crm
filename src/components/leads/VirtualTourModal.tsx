@@ -159,7 +159,7 @@ export function VirtualTourModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
       <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="p-4 sm:p-5 bg-slate-950 text-white flex items-center justify-between border-b border-slate-800">
+        <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-stone-900 to-slate-950 text-white flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-[#EE6427]/20 border border-orange-400/30 text-orange-400">
               <Video className="w-5 h-5" />
@@ -262,7 +262,7 @@ export function VirtualTourModal({
               </div>
 
               {/* Live Dual Time Converter Banner */}
-              <div className="p-3 bg-orange-50/80 dark:bg-slate-800 border border-orange-200/80 dark:border-orange-900/50 rounded-xl space-y-1.5 shadow-2xs">
+              <div className="p-3 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-slate-850 dark:to-slate-900 border border-orange-200/80 dark:border-orange-900/50 rounded-xl space-y-1.5">
                 <div className="flex items-center gap-1.5 text-orange-950 dark:text-orange-200 text-xs font-bold">
                   <Globe className="w-3.5 h-3.5 text-[#EE6427]" />
                   <span>Real-Time Dual Time Synchronization:</span>

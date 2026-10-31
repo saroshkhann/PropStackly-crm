@@ -259,36 +259,38 @@ function SettingsContent() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-16">
+    <div className="space-y-6 max-w-4xl pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pt-1">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
-            Agency Settings
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
-            <span>Agency configuration & security</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+            <span>System Configuration</span>
             <span>•</span>
-            <span>Head office profile, WhatsApp n8n webhooks & licensing.</span>
-            <span className="text-[#EE6427] font-bold">✨</span>
+            <span className="text-[#EE6427] font-bold">PropStackly CRM v2.1</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight">
+            Agency Profile, Notifications & Automation
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Configure head office credentials, scheduled follow-up reminders, and official WhatsApp n8n webhooks
           </p>
         </div>
 
         {isOwner ? (
           <button
             onClick={() => setIsResetConfirmOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 border border-rose-200/80 dark:border-rose-900 rounded-xl transition-colors self-start sm:self-auto cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors self-start sm:self-auto cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Demo Data</span>
+            Reset Demo Dataset
           </button>
         ) : (
           <div
             title="Reset dataset is restricted to Agency Owners"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl self-start sm:self-auto cursor-not-allowed"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg self-start sm:self-auto cursor-not-allowed"
           >
             <Lock className="w-3.5 h-3.5" />
-            <span>Owner Only</span>
+            Reset Dataset (Owner Only)
           </div>
         )}
       </div>

@@ -42,15 +42,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className="h-full bg-[#F7F7F5] dark:bg-[#0E1217] text-slate-900 dark:text-slate-100 antialiased"
+      className="h-full bg-[#FAF8F5] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 antialiased"
     >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&display=swap" rel="stylesheet" />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="min-h-full flex flex-col text-slate-900 dark:text-slate-100 bg-[#F7F7F5] dark:bg-[#0E1217] font-sans transition-colors duration-200">
+      <body className="min-h-full flex flex-col text-slate-900 dark:text-slate-100 bg-[#FAF8F5] dark:bg-[#0B0F19] font-sans transition-colors duration-200">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

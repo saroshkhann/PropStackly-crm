@@ -5,22 +5,17 @@
 @source "../../src";
 
 :root {
-  /* Warm minimal off-white background matching the Ember/Linear reference */
-  --background: #F7F7F5;
-  --foreground: #111827;
-  --surface: #FFFFFF;
-  --surface-border: rgba(0, 0, 0, 0.07);
+  --background: #FAF8F5;
+  --foreground: #0F172A;
   --brand-orange: #EE6427;
   --brand-orange-hover: #DE5518;
-  --brand-gold: #F59E0B;
+  --brand-gold: #FBD873;
 }
 
 .dark,
 [data-theme="dark"] {
-  --background: #0E1217;
+  --background: #0B0F19;
   --foreground: #F8FAFC;
-  --surface: #161B22;
-  --surface-border: rgba(255, 255, 255, 0.08);
   --brand-orange: #EE6427;
   --brand-orange-hover: #DE5518;
   --brand-gold: #F59E0B;
@@ -39,21 +34,12 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Serif font definition for elegant display titles (like "October so far") */
-.font-editorial {
-  font-family: "Newsreader", "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
-  font-style: normal;
-  letter-spacing: -0.02em;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -61,91 +47,141 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d0;
+  background: #cbd5e1;
   border-radius: 9999px;
 }
 
 .dark ::-webkit-scrollbar-thumb,
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #2d3748;
+  background: #374151;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a0;
+  background: #94a3b8;
 }
 
-/* ========================================================
-   TAILWIND V4 BACKWARD-COMPATIBLE UTILITIES
-   ======================================================== */
-@utility bg-gradient-to-r {
-  background-image: linear-gradient(to right, var(--tw-gradient-stops, #EE6427, #DE5518));
-}
-@utility bg-gradient-to-l {
-  background-image: linear-gradient(to left, var(--tw-gradient-stops, #EE6427, #DE5518));
-}
-@utility bg-gradient-to-b {
-  background-image: linear-gradient(to bottom, var(--tw-gradient-stops, #EE6427, #DE5518));
-}
-@utility bg-gradient-to-t {
-  background-image: linear-gradient(to top, var(--tw-gradient-stops, #EE6427, #DE5518));
-}
-@utility bg-gradient-to-br {
-  background-image: linear-gradient(to bottom right, var(--tw-gradient-stops, #EE6427, #DE5518));
-}
-
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-none {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Ember style card shadow */
-.ember-card {
-  background-color: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: 1.25rem; /* 20px */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
+.dark ::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
 }
 
 /* ========================================================
    UNIVERSAL DARK MODE FALLBACKS
+   Eliminates all unstyled white/light backgrounds, harsh
+   slate text, and light borders when dark mode is enabled.
    ======================================================== */
+
+/* Backgrounds - Cards, containers, modals, inputs */
 .dark .bg-white:not([class*="dark:bg-"]),
 [data-theme="dark"] .bg-white:not([class*="dark:bg-"]) {
-  background-color: #161B22 !important;
+  background-color: #0f172a !important;
 }
 
 .dark .bg-slate-50:not([class*="dark:bg-"]),
 [data-theme="dark"] .bg-slate-50:not([class*="dark:bg-"]),
 .dark [class*="bg-slate-50/"]:not([class*="dark:bg-"]),
 [data-theme="dark"] [class*="bg-slate-50/"]:not([class*="dark:bg-"]) {
-  background-color: #1C2128 !important;
+  background-color: #1e293b !important;
 }
 
 .dark .bg-slate-100:not([class*="dark:bg-"]),
 [data-theme="dark"] .bg-slate-100:not([class*="dark:bg-"]) {
-  background-color: #1C2128 !important;
+  background-color: #1e293b !important;
 }
 
 .dark .bg-slate-200:not([class*="dark:bg-"]),
 [data-theme="dark"] .bg-slate-200:not([class*="dark:bg-"]) {
-  background-color: #2D333B !important;
+  background-color: #334155 !important;
 }
 
+/* Text Colors */
 .dark .text-slate-900:not([class*="dark:text-"]),
 .dark .text-slate-950:not([class*="dark:text-"]),
 [data-theme="dark"] .text-slate-900:not([class*="dark:text-"]),
 [data-theme="dark"] .text-slate-950:not([class*="dark:text-"]) {
-  color: #F8FAFC !important;
+  color: #f8fafc !important;
 }
 
+.dark .text-slate-800:not([class*="dark:text-"]),
+[data-theme="dark"] .text-slate-800:not([class*="dark:text-"]) {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-slate-700:not([class*="dark:text-"]),
+[data-theme="dark"] .text-slate-700:not([class*="dark:text-"]) {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-slate-600:not([class*="dark:text-"]),
+[data-theme="dark"] .text-slate-600:not([class*="dark:text-"]) {
+  color: #94a3b8 !important;
+}
+
+.dark .text-slate-500:not([class*="dark:text-"]),
+[data-theme="dark"] .text-slate-500:not([class*="dark:text-"]) {
+  color: #94a3b8 !important;
+}
+
+/* Borders & Dividers */
 .dark .border-slate-200:not([class*="dark:border-"]),
 .dark .border-slate-100:not([class*="dark:border-"]),
 .dark .border-slate-300:not([class*="dark:border-"]),
+.dark [class*="border-slate-200/"]:not([class*="dark:border-"]),
+.dark [class*="border-slate-100/"]:not([class*="dark:border-"]),
 [data-theme="dark"] .border-slate-200:not([class*="dark:border-"]),
 [data-theme="dark"] .border-slate-100:not([class*="dark:border-"]),
-[data-theme="dark"] .border-slate-300:not([class*="dark:border-"]) {
-  border-color: #2D333B !important;
+[data-theme="dark"] .border-slate-300:not([class*="dark:border-"]),
+[data-theme="dark"] [class*="border-slate-200/"]:not([class*="dark:border-"]),
+[data-theme="dark"] [class*="border-slate-100/"]:not([class*="dark:border-"]) {
+  border-color: #334155 !important;
+}
+
+.dark .divide-slate-100:not([class*="dark:divide-"]),
+.dark .divide-slate-200:not([class*="dark:divide-"]),
+[data-theme="dark"] .divide-slate-100:not([class*="dark:divide-"]),
+[data-theme="dark"] .divide-slate-200:not([class*="dark:divide-"]) {
+  border-color: #334155 !important;
+}
+
+/* Hovers */
+.dark .hover\:bg-slate-50:hover:not([class*="dark:hover:bg-"]),
+.dark [class*="hover:bg-slate-50/"]:hover:not([class*="dark:hover:bg-"]),
+[data-theme="dark"] .hover\:bg-slate-50:hover:not([class*="dark:hover:bg-"]),
+[data-theme="dark"] [class*="hover:bg-slate-50/"]:hover:not([class*="dark:hover:bg-"]) {
+  background-color: #1e293b !important;
+}
+
+.dark .hover\:bg-slate-100:hover:not([class*="dark:hover:bg-"]),
+[data-theme="dark"] .hover\:bg-slate-100:hover:not([class*="dark:hover:bg-"]) {
+  background-color: #334155 !important;
+}
+
+/* Form Controls Fallback */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([class*="dark:bg-"]),
+.dark select:not([class*="dark:bg-"]),
+.dark textarea:not([class*="dark:bg-"]),
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([class*="dark:bg-"]),
+[data-theme="dark"] select:not([class*="dark:bg-"]),
+[data-theme="dark"] textarea:not([class*="dark:bg-"]) {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark input:disabled,
+.dark select:disabled,
+.dark textarea:disabled,
+[data-theme="dark"] input:disabled,
+[data-theme="dark"] select:disabled,
+[data-theme="dark"] textarea:disabled {
+  background-color: #0f172a !important;
+  color: #64748b !important;
+  border-color: #1e293b !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #64748b !important;
 }

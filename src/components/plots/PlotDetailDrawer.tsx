@@ -226,7 +226,7 @@ export function PlotDetailDrawer({
           {activeTab === "details" && (
             <div className="space-y-6">
               {/* Financial Highlight Card */}
-              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-white shadow-md space-y-3">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-md space-y-3">
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-[11px] uppercase tracking-wider text-slate-400 font-bold block">

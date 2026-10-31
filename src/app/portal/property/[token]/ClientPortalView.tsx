@@ -178,7 +178,7 @@ export function ClientPortalView({ dossier }: ClientPortalViewProps) {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8">
         {/* Personalization Greeting Card */}
         {dossier.target_buyer_name && (
-          <div className="p-4 sm:p-5 rounded-2xl bg-slate-900 border border-[#EE6427]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-950 via-stone-900 to-slate-900 border border-[#EE6427]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-[#EE6427]/20 border border-orange-400/30 text-orange-400 shrink-0">
                 <Sparkles className="w-5 h-5" />
@@ -449,7 +449,7 @@ export function ClientPortalView({ dossier }: ClientPortalViewProps) {
           </div>
 
           {/* Right Column: WhatsApp Video Tour Scheduler with Timezone Conversion */}
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-xl">
+          <div className="p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 space-y-4 shadow-xl">
             <div className="flex items-center gap-2.5 text-orange-400">
               <Video className="w-5 h-5" />
               <div>

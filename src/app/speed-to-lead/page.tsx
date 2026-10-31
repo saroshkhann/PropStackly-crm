@@ -23,14 +23,6 @@ import {
   Calendar,
   Layers,
   Flame,
-  User,
-  Building2,
-  Globe,
-  Share2,
-  Check,
-  Sparkles,
-  ChevronRight,
-  ShieldCheck,
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { useCRM } from "@/context/CRMContext";
@@ -55,51 +47,9 @@ import { SLACountdownBadge } from "@/components/sla/SLACountdownBadge";
 
 type ActiveTab = "radar" | "agent_report" | "source_report" | "escalation_log";
 
-function getSourceBadge(source: string) {
-  const s = source.toLowerCase();
-  if (s.includes("whatsapp")) {
-    return {
-      label: "WhatsApp",
-      icon: MessageSquare,
-      className: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
-      dot: "bg-emerald-500",
-    };
-  }
-  if (s.includes("facebook") || s.includes("meta") || s.includes("insta")) {
-    return {
-      label: source,
-      icon: Share2,
-      className: "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
-      dot: "bg-blue-500",
-    };
-  }
-  if (s.includes("zameen")) {
-    return {
-      label: "Zameen.com",
-      icon: Building2,
-      className: "bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800",
-      dot: "bg-rose-500",
-    };
-  }
-  if (s.includes("referral")) {
-    return {
-      label: "Referral",
-      icon: Users,
-      className: "bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800",
-      dot: "bg-purple-500",
-    };
-  }
-  return {
-    label: source,
-    icon: Globe,
-    className: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700",
-    dot: "bg-slate-400",
-  };
-}
-
 function SpeedToLeadContent() {
-  const { currentAgent, showToast, currentUser, settings } = useCRM();
-  const isDemo = currentUser?.email === "admin@propstackly.com" || !currentUser;
+  const { currentAgent, showToast, currentUser } = useCRM();
+  const isDemo = currentUser?.email === "admin@propstackly.com";
 
   // State
   const [config, setConfig] = useState<SpeedToLeadConfig>(defaultSpeedToLeadConfig);
@@ -188,21 +138,6 @@ function SpeedToLeadContent() {
     [activeUnresponded]
   );
 
-  const warningCount = useMemo(
-    () => activeUnresponded.filter((l) => l.state === "warning").length,
-    [activeUnresponded]
-  );
-
-  const breachedCount = useMemo(
-    () => activeUnresponded.filter((l) => l.state === "breached" || l.state === "escalated" || l.state === "reassigned").length,
-    [activeUnresponded]
-  );
-
-  const respondedCount = useMemo(
-    () => slaLeads.filter((l) => l.state === "responded_on_time" || l.state === "responded_late").length,
-    [slaLeads]
-  );
-
   // Handlers
   const handleSaveConfig = (newConfig: SpeedToLeadConfig) => {
     setConfig(newConfig);
@@ -211,25 +146,6 @@ function SpeedToLeadContent() {
 
   const handleOpenContactModal = (lead: LeadSLAInfo) => {
     setContactModalLead(lead);
-  };
-
-  const handleQuickWhatsApp = (lead: LeadSLAInfo) => {
-    const cleanPhone = lead.phone.replace(/[^0-9]/g, "");
-    const agentName = currentAgent?.name || lead.assignedAgentName || "PropStackly Agent";
-    const agencyName = settings.agencyName || "Apex Properties";
-    const waMessage =
-      `Assalam-o-Alaikum *${lead.leadName}*,\n\n` +
-      `Thank you for reaching out via *${lead.source}* regarding property opportunities.\n\n` +
-      `I am *${agentName}* from *${agencyName}*. When would be a good time for a quick 2-minute call to discuss available listings and quotation?\n\n` +
-      `Looking forward to assisting you!`;
-
-    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}`, "_blank");
-    handleOpenContactModal(lead);
-  };
-
-  const handleQuickCall = (lead: LeadSLAInfo) => {
-    window.open(`tel:${lead.phone}`, "_self");
-    handleOpenContactModal(lead);
   };
 
   const handleLogContactSuccess = (
@@ -308,6 +224,7 @@ function SpeedToLeadContent() {
   };
 
   const handleManualReassign = (leadId: string) => {
+    // Reassign to Ayesha Khan
     setSlaLeads((prev) =>
       prev.map((l) =>
         l.leadId === leadId
@@ -354,7 +271,7 @@ function SpeedToLeadContent() {
         return false;
       }
       if (statusFilter === "warning" && l.state !== "warning") return false;
-      if (statusFilter === "breached" && (l.state !== "breached" && l.state !== "escalated" && l.state !== "reassigned")) return false;
+      if (statusFilter === "breached" && (l.state !== "breached" && l.state !== "escalated")) return false;
       if (statusFilter === "responded" && l.state !== "responded_on_time" && l.state !== "responded_late") {
         return false;
       }
@@ -370,64 +287,67 @@ function SpeedToLeadContent() {
   }, [slaLeads, statusFilter, searchQuery]);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pt-1">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
-            Speed-to-Lead SLA
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
-            <span>5-minute first response guarantee</span>
-            <span>•</span>
-            <span>Live inquiry monitoring, automated escalation & agent scorecards.</span>
-            <span className="text-[#EE6427] font-bold">✨</span>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Speed-to-Lead SLA & Escalation
+            </h1>
+            <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-orange-100 dark:bg-orange-950/60 text-[#EE6427] border border-orange-200 dark:border-orange-800 flex items-center gap-1">
+              <Zap className="w-3.5 h-3.5" />
+              <span>{config.firstResponseTargetMinutes}m Target SLA</span>
+            </span>
+          </div>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Real-time inquiry monitoring, agent warning timers, automated manager escalations, and per-agent/source response reports.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={() => setIsConfigOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800/90 hover:bg-slate-50 border border-black/[0.06] dark:border-white/[0.08] rounded-xl shadow-2xs transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors cursor-pointer"
           >
-            <Settings className="w-3.5 h-3.5 text-slate-500" />
-            <span>Configure Policy Rules</span>
+            <Settings className="w-4 h-4" />
+            <span>Configure Policy</span>
           </button>
         </div>
       </div>
 
       {/* SLA Policy Summary Ribbon */}
-      <div className="p-4 rounded-2xl bg-slate-900 text-white shadow-md border border-slate-800 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs">
+      <div className="p-4 rounded-2xl bg-linear-to-r from-orange-50 via-amber-50 to-orange-100 dark:from-slate-900 dark:via-slate-850 dark:to-slate-900 border border-orange-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-4 text-xs">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-emerald-400/20"></span>
-            <span className="text-slate-400">1st Response Target:</span>
-            <span className="font-bold text-white font-mono bg-slate-800/80 px-2 py-0.5 rounded-md">
-              {config.firstResponseTargetMinutes} Mins
+            <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span className="text-slate-600 dark:text-slate-400">1st Response Target:</span>
+            <span className="font-bold text-slate-950 dark:text-white font-mono">
+              {config.firstResponseTargetMinutes} Minutes
             </span>
           </div>
 
-          <div className="flex items-center gap-2 border-l border-slate-800 pl-3 sm:pl-6">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-            <span className="text-slate-400">Agent Warning:</span>
-            <span className="font-bold text-white font-mono bg-slate-800/80 px-2 py-0.5 rounded-md">
-              {config.agentWarningMinutes} Mins
+          <div className="flex items-center gap-2 border-l border-slate-300 dark:border-slate-700 pl-4">
+            <span className="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
+            <span className="text-slate-600 dark:text-slate-400">Agent Warning:</span>
+            <span className="font-bold text-slate-950 dark:text-white font-mono">
+              {config.agentWarningMinutes} Minutes
             </span>
           </div>
 
-          <div className="flex items-center gap-2 border-l border-slate-800 pl-3 sm:pl-6">
-            <span className="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
-            <span className="text-slate-400">Manager Alert:</span>
-            <span className="font-bold text-white font-mono bg-slate-800/80 px-2 py-0.5 rounded-md">
-              {config.managerEscalationMinutes} Mins
+          <div className="flex items-center gap-2 border-l border-slate-300 dark:border-slate-700 pl-4">
+            <span className="w-3 h-3 rounded-full bg-purple-600"></span>
+            <span className="text-slate-600 dark:text-slate-400">Manager Alert:</span>
+            <span className="font-bold text-slate-950 dark:text-white font-mono">
+              {config.managerEscalationMinutes} Minutes
             </span>
           </div>
 
-          <div className="flex items-center gap-2 border-l border-slate-800 pl-3 sm:pl-6">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
-            <span className="text-slate-400">Auto-Reassign:</span>
-            <span className="font-bold text-white font-mono bg-slate-800/80 px-2 py-0.5 rounded-md">
+          <div className="flex items-center gap-2 border-l border-slate-300 dark:border-slate-700 pl-4">
+            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+            <span className="text-slate-600 dark:text-slate-400">Auto-Reassign:</span>
+            <span className="font-bold text-slate-950 dark:text-white font-mono">
               {config.autoReassignEnabled ? `${config.autoReassignMinutes}m (${config.reassignStrategy})` : "Disabled"}
             </span>
           </div>
@@ -436,445 +356,309 @@ function SpeedToLeadContent() {
         <button
           type="button"
           onClick={() => setIsConfigOpen(true)}
-          className="text-xs font-bold text-[#EE6427] hover:text-orange-400 flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+          className="text-xs font-bold text-[#EE6427] hover:underline flex items-center gap-1 shrink-0 cursor-pointer"
         >
-          <span>Modify Thresholds</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <span>Edit Policy Rules</span>
+          <ArrowRight className="w-3 h-3" />
         </button>
       </div>
 
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Avg Response Time */}
-        <div className="p-4.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md transition-shadow flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Agency Avg Response Time</p>
-            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1 font-mono tracking-tight">
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Agency Avg Response Time</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">
               {avgAgencyResponseTime} mins
             </p>
-            <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1 flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>Target: &lt; {config.firstResponseTargetMinutes}m benchmark</span>
+            <p className="text-[11px] text-emerald-600 font-semibold mt-0.5 flex items-center gap-1">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>Target: &lt; {config.firstResponseTargetMinutes} mins</span>
             </p>
           </div>
-          <div className="w-11 h-11 rounded-2xl bg-orange-50 dark:bg-orange-950/60 text-[#EE6427] border border-orange-200/60 dark:border-orange-900/40 flex items-center justify-center shrink-0">
-            <Zap className="w-5 h-5 fill-[#EE6427]" />
+          <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950/50 text-[#EE6427] flex items-center justify-center">
+            <Zap className="w-5 h-5" />
           </div>
         </div>
 
         {/* SLA Compliance Rate */}
-        <div className="p-4.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md transition-shadow flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">SLA Compliance Rate</p>
-            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 font-mono tracking-tight">
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">SLA Compliance Rate</p>
+            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
               {slaCompliancePct}%
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-1">
-              Contacted under {config.firstResponseTargetMinutes}m window
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+              Contacted under {config.firstResponseTargetMinutes}m target
             </p>
           </div>
-          <div className="w-11 h-11 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 border border-emerald-200/60 dark:border-emerald-900/40 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center">
             <TrendingUp className="w-5 h-5" />
           </div>
         </div>
 
         {/* Active Inflow / At Risk */}
-        <div className="p-4.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md transition-shadow flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Active Radar Inflow</p>
-            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1 font-mono tracking-tight">
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Active Inquiries (Timers Active)</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">
               {activeUnresponded.length} Leads
             </p>
-            <p className={`text-[11px] font-semibold mt-1 flex items-center gap-1 ${atRiskCount > 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
-              {atRiskCount > 0 ? (
-                <>
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>{atRiskCount} at risk or breached</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>All timers safely on track</span>
-                </>
-              )}
+            <p className={`text-[11px] font-semibold mt-0.5 ${atRiskCount > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+              {atRiskCount > 0 ? `⚠️ ${atRiskCount} at risk or breached` : "All on track"}
             </p>
           </div>
-          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center border shrink-0 ${atRiskCount > 0 ? "bg-rose-50 dark:bg-rose-950/60 text-rose-600 border-rose-200/60 dark:border-rose-900/40" : "bg-blue-50 dark:bg-blue-950/60 text-blue-600 border-blue-200/60 dark:border-blue-900/40"}`}>
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${atRiskCount > 0 ? "bg-rose-50 text-rose-600" : "bg-blue-50 text-blue-600"}`}>
             <Clock className="w-5 h-5" />
           </div>
         </div>
 
         {/* Auto-Reassignments */}
-        <div className="p-4.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md transition-shadow flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Leads Rescued & Reassigned</p>
-            <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1 font-mono tracking-tight">
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Auto-Reassigned Due to Delay</p>
+            <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">
               {slaLeads.filter((l) => l.isReassigned).length} Saved
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-1">
-              Zero lead loss from delayed agents
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+              Prevented lead loss from inactive agents
             </p>
           </div>
-          <div className="w-11 h-11 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 border border-blue-200/60 dark:border-blue-900/40 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center">
             <UserCheck className="w-5 h-5" />
           </div>
         </div>
       </div>
 
-      {/* Tabs & Search Navigation Bar */}
-      <div className="bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        {/* Modern Segmented Control */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+      {/* Tabs & Search Navigation */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
           <button
             type="button"
             onClick={() => setActiveTab("radar")}
-            className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-2 ${
+            className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
               activeTab === "radar"
-                ? "bg-[#EE6427] text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
-            <Flame className={`w-4 h-4 ${activeTab === "radar" ? "text-white" : "text-orange-500"}`} />
-            <span>Live Radar</span>
-            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === "radar" ? "bg-white/20 text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"}`}>
-              {activeUnresponded.length}
-            </span>
+            <Flame className="w-3.5 h-3.5 text-orange-500" />
+            <span>Live Inflow Radar ({activeUnresponded.length} Active)</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("agent_report")}
-            className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-2 ${
+            className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
               activeTab === "agent_report"
-                ? "bg-[#EE6427] text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
-            <Users className="w-4 h-4" />
-            <span>Agent Scorecard</span>
+            <Users className="w-3.5 h-3.5" />
+            <span>Response-Time Report Per Agent</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("source_report")}
-            className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-2 ${
+            className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
               activeTab === "source_report"
-                ? "bg-[#EE6427] text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
-            <BarChart3 className="w-4 h-4" />
-            <span>Channel Analytics</span>
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Response-Time Report Per Source</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("escalation_log")}
-            className={`px-3.5 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap shrink-0 flex items-center gap-2 ${
+            className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
               activeTab === "escalation_log"
-                ? "bg-[#EE6427] text-white shadow-sm"
-                : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
           >
-            <ShieldAlert className="w-4 h-4 text-purple-500" />
-            <span>Escalation Log</span>
-            <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${activeTab === "escalation_log" ? "bg-white/20 text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300"}`}>
-              {escalationLogs.length}
-            </span>
+            <ShieldAlert className="w-3.5 h-3.5 text-purple-600" />
+            <span>Escalation Log ({escalationLogs.length})</span>
           </button>
         </div>
 
         {/* Search */}
-        <div className="relative w-full md:w-72 shrink-0">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+        <div className="relative w-full sm:w-64">
+          <Search className="w-3.5 h-3.5 absolute left-3 top-3 text-slate-400" />
           <input
             type="text"
-            placeholder="Search lead, phone, agent..."
+            placeholder="Search lead, agent, source..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#EE6427] transition-all"
+            className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-[#EE6427]"
           />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery("")}
-              className="absolute right-2.5 top-2.5 text-xs text-slate-400 hover:text-slate-600 cursor-pointer"
-            >
-              ✕
-            </button>
-          )}
         </div>
       </div>
 
       {/* TAB 1: LIVE INFLOW RADAR */}
       {activeTab === "radar" && (
         <div className="space-y-4">
-          {/* Status Filter Pills */}
+          {/* Filter Pills */}
           <div className="flex flex-wrap items-center gap-2">
             {[
-              { id: "all", label: "All Inquiries", count: slaLeads.length },
-              { id: "active", label: "⚡ Active Timers", count: activeUnresponded.length },
-              { id: "warning", label: "⚠️ Approaching Warning", count: warningCount },
-              { id: "breached", label: "🚨 Breached / Alerted", count: breachedCount },
-              { id: "responded", label: "✓ Responded", count: respondedCount },
-            ].map((f) => {
-              const isSelected = statusFilter === f.id;
-              return (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setStatusFilter(f.id)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                    isSelected
-                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
-                      : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  }`}
-                >
-                  <span>{f.label}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${isSelected ? "bg-white/20 text-white dark:bg-slate-900/20 dark:text-slate-900" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
-                    {f.count}
-                  </span>
-                </button>
-              );
-            })}
+              { id: "all", label: "All Enquiries" },
+              { id: "active", label: "Active Timers Only" },
+              { id: "warning", label: "⚠️ Approaching SLA Warning" },
+              { id: "breached", label: "🚨 Breached / Manager Alert" },
+              { id: "responded", label: "✓ Responded" },
+            ].map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setStatusFilter(f.id)}
+                className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors cursor-pointer ${
+                  statusFilter === f.id
+                    ? "bg-[#EE6427] text-white shadow-xs"
+                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
           </div>
 
-          {/* Radar Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredRadarLeads.length === 0 ? (
-              <div className="col-span-full py-16 px-4 text-center rounded-2xl bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800">
-                <Clock className="w-10 h-10 text-slate-400 mx-auto mb-3 opacity-40 animate-pulse" />
-                <p className="text-sm font-bold text-slate-800 dark:text-slate-200">No matching inquiry timers found</p>
-                <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
-                  When new prospective buyers arrive via Facebook Ads, WhatsApp, or Portals, their speed-to-lead SLA countdown starts here instantly.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setStatusFilter("all");
-                    setSearchQuery("");
-                  }}
-                  className="mt-4 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 cursor-pointer"
-                >
-                  Reset Filters
-                </button>
+              <div className="col-span-full py-12 px-4 text-center rounded-2xl bg-white dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800">
+                <Clock className="w-8 h-8 text-slate-400 mx-auto mb-2 opacity-50" />
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No active lead SLA timers</p>
+                <p className="text-[11px] text-slate-400 mt-1">When new enquiries arrive from Facebook, WhatsApp, or Portals, their speed-to-lead timer starts here.</p>
               </div>
             ) : (
               filteredRadarLeads.map((lead) => {
-                const badge = getSLAStateBadge(lead.state);
-                const sourceBadge = getSourceBadge(lead.source);
-                const SourceIcon = sourceBadge.icon;
-                const isFinished = lead.state === "responded_on_time" || lead.state === "responded_late";
+              const badge = getSLAStateBadge(lead.state);
+              const countdown = formatSLACountdown(lead.remainingMinutes, lead.elapsedMinutes, lead.targetMinutes);
+              const isFinished = lead.state === "responded_on_time" || lead.state === "responded_late";
 
-                // Progress calculation
-                const progressPct = Math.min(100, Math.round((lead.elapsedMinutes / lead.targetMinutes) * 100));
+              return (
+                <div
+                  key={lead.leadId}
+                  className={`rounded-2xl border p-4.5 bg-white dark:bg-slate-900 shadow-xs transition-all flex flex-col justify-between ${
+                    lead.state === "escalated"
+                      ? "border-purple-300 dark:border-purple-800 shadow-md ring-1 ring-purple-400/30"
+                      : lead.state === "warning"
+                      ? "border-amber-300 dark:border-amber-700 ring-1 ring-amber-400/30"
+                      : "border-slate-200 dark:border-slate-800"
+                  }`}
+                >
+                  <div>
+                    {/* Top Status & Countdown */}
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-2.5 h-2.5 rounded-full ${badge.dotColor}`}></span>
+                        <span className={`font-bold text-xs ${badge.textColor}`}>{badge.label}</span>
+                      </div>
+                      <SLACountdownBadge sla={lead} />
+                    </div>
 
-                return (
-                  <div
-                    key={lead.leadId}
-                    className={`rounded-2xl border bg-white dark:bg-slate-900 shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden relative ${
-                      lead.state === "escalated"
-                        ? "border-purple-300 dark:border-purple-800 ring-2 ring-purple-500/20"
-                        : lead.state === "warning"
-                        ? "border-amber-300 dark:border-amber-700 ring-2 ring-amber-500/20"
-                        : lead.state === "breached"
-                        ? "border-rose-300 dark:border-rose-800 ring-2 ring-rose-500/20"
-                        : isFinished
-                        ? "border-slate-200 dark:border-slate-800 opacity-90"
-                        : "border-slate-200/90 dark:border-slate-800"
-                    }`}
-                  >
-                    {/* Top Colored Accent Stripe */}
-                    <div
-                      className={`h-1.5 w-full ${
-                        lead.state === "safe"
-                          ? "bg-emerald-500"
-                          : lead.state === "warning"
-                          ? "bg-amber-500"
-                          : lead.state === "escalated"
-                          ? "bg-purple-600"
-                          : lead.state === "reassigned"
-                          ? "bg-blue-500"
-                          : lead.state === "breached"
-                          ? "bg-rose-500"
-                          : "bg-slate-400"
-                      }`}
-                    />
-
-                    <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-                      {/* Top Header Row: Status & Countdown Badge */}
-                      <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${badge.dotColor}`} />
-                          <span className={`font-bold text-xs ${badge.textColor}`}>{badge.label}</span>
+                    {/* Lead Bio */}
+                    <div className="mt-3">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-bold text-sm text-slate-900 dark:text-white">
+                            {lead.leadName}
+                          </h3>
+                          <p className="font-mono text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                            {lead.phone}
+                          </p>
                         </div>
-                        <SLACountdownBadge sla={lead} />
+                        <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                          {lead.source}
+                        </span>
                       </div>
 
-                      {/* Lead Bio & Phone */}
-                      <div className="mt-3.5">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="min-w-0">
-                            <h3 className="font-bold text-sm text-slate-950 dark:text-white truncate">
-                              {lead.leadName}
-                            </h3>
-                            <a
-                              href={`tel:${lead.phone}`}
-                              className="font-mono text-xs text-slate-600 dark:text-slate-400 hover:text-[#EE6427] flex items-center gap-1.5 mt-0.5 transition-colors"
-                            >
-                              <Phone className="w-3 h-3 text-slate-400" />
-                              <span>{lead.phone}</span>
-                            </a>
-                          </div>
+                      {/* Escalation or Reassignment Notice */}
+                      {lead.isReassigned && (
+                        <div className="mt-2.5 p-2 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[11px] text-blue-900 dark:text-blue-300 flex items-center justify-between">
+                          <span>Auto-reassigned from {lead.reassignedFromAgentName}</span>
+                          <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+                        </div>
+                      )}
 
-                          <span
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-lg border shrink-0 ${sourceBadge.className}`}
-                          >
-                            <SourceIcon className="w-3 h-3" />
-                            <span>{sourceBadge.label}</span>
+                      {lead.isManagerAlerted && !lead.isReassigned && (
+                        <div className="mt-2.5 p-2 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/60 text-[11px] text-purple-900 dark:text-purple-300 flex items-center justify-between">
+                          <span>Manager Alert Dispatched</span>
+                          <ShieldAlert className="w-3.5 h-3.5 text-purple-600" />
+                        </div>
+                      )}
+
+                      {/* Assignment & Elapsed Time Details */}
+                      <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs space-y-1.5 text-slate-600 dark:text-slate-400">
+                        <div className="flex items-center justify-between">
+                          <span>Assigned Agent:</span>
+                          <span className="font-bold text-slate-900 dark:text-white">
+                            {lead.assignedAgentName}
                           </span>
                         </div>
-
-                        {/* Special Notices: Reassigned or Manager Alerted */}
-                        {lead.isReassigned && (
-                          <div className="mt-3 p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-[11px] text-blue-900 dark:text-blue-200 flex items-center justify-between">
-                            <span className="font-semibold flex items-center gap-1.5">
-                              <UserCheck className="w-3.5 h-3.5 text-blue-600" />
-                              <span>Reassigned from {lead.reassignedFromAgentName}</span>
-                            </span>
-                            <span className="text-[10px] text-blue-600 font-mono font-bold">Auto-Handed Off</span>
-                          </div>
-                        )}
-
-                        {lead.isManagerAlerted && !lead.isReassigned && (
-                          <div className="mt-3 p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-900/60 text-[11px] text-purple-900 dark:text-purple-200 flex items-center justify-between">
-                            <span className="font-semibold flex items-center gap-1.5">
-                              <ShieldAlert className="w-3.5 h-3.5 text-purple-600" />
-                              <span>Manager Alert Dispatched</span>
-                            </span>
-                            <span className="text-[10px] text-purple-600 font-mono font-bold">High Priority</span>
-                          </div>
-                        )}
-
-                        {/* Visual SLA Progress Bar */}
-                        {!isFinished && (
-                          <div className="mt-3.5 space-y-1">
-                            <div className="flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                              <span>Elapsed: {lead.elapsedMinutes}m</span>
-                              <span>Target: {lead.targetMinutes}m</span>
-                            </div>
-                            <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                              <div
-                                className={`h-full transition-all duration-300 ${
-                                  lead.elapsedMinutes >= lead.targetMinutes
-                                    ? "bg-rose-500"
-                                    : lead.elapsedMinutes >= config.agentWarningMinutes
-                                    ? "bg-amber-500"
-                                    : "bg-emerald-500"
-                                }`}
-                                style={{ width: `${Math.min(100, progressPct)}%` }}
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Assignment Details */}
-                        <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs space-y-1.5 text-slate-600 dark:text-slate-400">
-                          <div className="flex items-center justify-between">
-                            <span className="text-slate-500">Assigned Agent:</span>
-                            <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                              <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-[10px] flex items-center justify-center">
-                                {lead.assignedAgentName.charAt(0)}
-                              </span>
-                              <span>{lead.assignedAgentName}</span>
-                            </span>
-                          </div>
-
-                          {isFinished && (
-                            <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400 font-semibold pt-1">
-                              <span>First Response Recorded:</span>
-                              <span className="font-mono font-bold">
-                                {lead.firstResponseMinutes?.toFixed(1)} mins ({lead.firstResponseType})
-                              </span>
-                            </div>
-                          )}
+                        <div className="flex items-center justify-between">
+                          <span>Elapsed Since Inflow:</span>
+                          <span className="font-mono font-medium text-slate-900 dark:text-slate-200">
+                            {lead.elapsedMinutes} mins
+                          </span>
                         </div>
-                      </div>
-
-                      {/* Multi-Action Fast Response Bar */}
-                      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
-                        {!isFinished ? (
-                          <div className="flex items-center gap-2">
-                            {/* 1-Click WhatsApp Button */}
-                            <button
-                              type="button"
-                              onClick={() => handleQuickWhatsApp(lead)}
-                              className="flex-1 py-2 px-2.5 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                              title="1-Click WhatsApp greeting"
-                            >
-                              <MessageSquare className="w-3.5 h-3.5" />
-                              <span>WhatsApp</span>
-                            </button>
-
-                            {/* 1-Click Direct Call */}
-                            <button
-                              type="button"
-                              onClick={() => handleQuickCall(lead)}
-                              className="py-2 px-3 text-xs font-bold rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                              title="Direct phone dialer"
-                            >
-                              <Phone className="w-3.5 h-3.5" />
-                              <span className="hidden sm:inline">Call</span>
-                            </button>
-
-                            {/* Log Response / Stop Timer */}
-                            <button
-                              type="button"
-                              onClick={() => handleOpenContactModal(lead)}
-                              className="py-2 px-3 text-xs font-bold rounded-xl bg-[#EE6427] hover:bg-[#d9551c] text-white shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                              title="Stop SLA timer and enter notes"
-                            >
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Log Done</span>
-                            </button>
-
-                            {/* Reassign Button if Escalated */}
-                            {lead.state === "escalated" && (
-                              <button
-                                type="button"
-                                onClick={() => handleManualReassign(lead.leadId)}
-                                className="py-2 px-2.5 text-xs font-bold rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 transition-colors cursor-pointer shrink-0"
-                                title="Reassign to another available agent"
-                              >
-                                Reassign
-                              </button>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="w-full py-2 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300">
-                            <span className="font-semibold flex items-center gap-1.5">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                              <span>Response Logged in {lead.firstResponseMinutes?.toFixed(1)}m</span>
-                            </span>
-                            <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-200/60 dark:bg-emerald-800/40 px-2 py-0.5 rounded-md">
-                              {lead.firstResponseType || "Contacted"}
-                            </span>
+                        {isFinished && (
+                          <div className="flex items-center justify-between text-emerald-600 font-semibold">
+                            <span>First Response Time:</span>
+                            <span>{lead.firstResponseMinutes?.toFixed(1)} mins ({lead.firstResponseType})</span>
                           </div>
                         )}
                       </div>
                     </div>
                   </div>
-                );
-              })
-            )}
-          </div>
+
+                  {/* Action Buttons */}
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                    {!isFinished ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenContactModal(lead)}
+                          className="flex-1 py-1.5 px-3 text-xs font-bold rounded-xl bg-[#EE6427] hover:bg-[#d9551c] text-white shadow-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <Zap className="w-3.5 h-3.5" />
+                          <span>Log Contact (Stop SLA)</span>
+                        </button>
+
+                        {lead.state === "escalated" && (
+                          <button
+                            type="button"
+                            onClick={() => handleManualReassign(lead.leadId)}
+                            className="py-1.5 px-2.5 text-xs font-medium rounded-xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 transition-colors cursor-pointer"
+                            title="Reassign to another agent"
+                          >
+                            Reassign
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <div className="w-full text-center py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 rounded-lg">
+                        ✓ Response Completed ({lead.firstResponseMinutes?.toFixed(1)}m)
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
+      </div>
       )}
 
       {/* TAB 2: RESPONSE-TIME REPORT PER AGENT */}
       {activeTab === "agent_report" && (
         <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
-          <div className="p-4 bg-slate-50 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="p-4 bg-slate-50 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <div>
               <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                 Speed-to-Lead Response Ranking Per Agent
@@ -883,7 +667,7 @@ function SpeedToLeadContent() {
                 Performance metrics for first response time against the {config.firstResponseTargetMinutes}-minute SLA target
               </p>
             </div>
-            <span className="text-xs font-bold text-[#EE6427] bg-orange-50 dark:bg-orange-950/50 px-2.5 py-1 rounded-lg border border-orange-200 dark:border-orange-900">
+            <span className="text-xs font-bold text-[#EE6427]">
               Ranked by Fastest Response Speed
             </span>
           </div>
@@ -893,7 +677,7 @@ function SpeedToLeadContent() {
               <thead className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-700">
                 <tr>
                   <th className="py-3 px-4">Sales Agent</th>
-                  <th className="py-3 px-4 text-center">Total Inquiries</th>
+                  <th className="py-3 px-4 text-center">Total Enquiries</th>
                   <th className="py-3 px-4 text-center">Avg Response Time</th>
                   <th className="py-3 px-4 text-center">SLA Compliance %</th>
                   <th className="py-3 px-4 text-center">Warnings</th>
@@ -906,13 +690,13 @@ function SpeedToLeadContent() {
                 {agentStats.map((agent) => {
                   const isUnder5 = agent.avgResponseMinutes <= 5.0;
                   return (
-                    <tr key={agent.agentId} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
+                    <tr key={agent.agentId} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/30">
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
                           <img
                             src={agent.avatar}
                             alt={agent.agentName}
-                            className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700"
+                            className="w-9 h-9 rounded-full object-cover border"
                           />
                           <div>
                             <p className="font-bold text-slate-950 dark:text-white">{agent.agentName}</p>
@@ -920,12 +704,12 @@ function SpeedToLeadContent() {
                           </div>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-center font-bold text-slate-900 dark:text-white font-mono">
+                      <td className="py-3.5 px-4 text-center font-bold text-slate-900 dark:text-white">
                         {agent.totalLeads}
                       </td>
                       <td className="py-3.5 px-4 text-center">
                         <span
-                          className={`font-mono font-bold text-xs px-2.5 py-1 rounded-lg ${
+                          className={`font-mono font-bold text-sm px-2.5 py-0.5 rounded-md ${
                             isUnder5
                               ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
                               : agent.avgResponseMinutes <= 10
@@ -948,15 +732,15 @@ function SpeedToLeadContent() {
                                   : "bg-rose-500"
                               }`}
                               style={{ width: `${agent.complianceRate}%` }}
-                            />
+                            ></div>
                           </div>
                           <span className="font-bold font-mono">{agent.complianceRate}%</span>
                         </div>
                       </td>
-                      <td className="py-3.5 px-4 text-center text-amber-600 font-bold font-mono">
+                      <td className="py-3.5 px-4 text-center text-amber-600 font-bold">
                         {agent.warningCount}
                       </td>
-                      <td className="py-3.5 px-4 text-center text-rose-600 font-bold font-mono">
+                      <td className="py-3.5 px-4 text-center text-rose-600 font-bold">
                         {agent.breachCount}
                       </td>
                       <td className="py-3.5 px-4 text-center">
@@ -1024,21 +808,21 @@ function SpeedToLeadContent() {
                       <td className="py-3.5 px-4 font-bold text-slate-950 dark:text-white">
                         {src.source}
                       </td>
-                      <td className="py-3.5 px-4 text-center font-bold text-slate-900 dark:text-white font-mono">
+                      <td className="py-3.5 px-4 text-center font-bold text-slate-900 dark:text-white">
                         {src.totalLeads} leads
                       </td>
                       <td className="py-3.5 px-4 text-center">
-                        <span className="font-mono font-bold text-xs text-orange-600 dark:text-orange-400">
+                        <span className="font-mono font-bold text-sm text-orange-600">
                           {src.avgResponseMinutes} mins
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-center font-bold font-mono">
-                        {src.complianceRate}%
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="font-bold font-mono">{src.complianceRate}%</span>
                       </td>
-                      <td className="py-3.5 px-4 text-center text-emerald-600 font-mono font-bold">
+                      <td className="py-3.5 px-4 text-center text-emerald-600 font-mono">
                         {src.fastestMinutes}m
                       </td>
-                      <td className="py-3.5 px-4 text-center text-rose-600 font-mono font-bold">
+                      <td className="py-3.5 px-4 text-center text-rose-600 font-mono">
                         {src.slowestMinutes}m
                       </td>
                       <td className="py-3.5 px-4 text-center">
@@ -1062,19 +846,19 @@ function SpeedToLeadContent() {
           </div>
 
           {/* Strategic Insight Box */}
-          <div className="p-4.5 rounded-2xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/60 text-xs space-y-1.5">
-            <span className="font-bold text-orange-950 dark:text-orange-200 flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#EE6427] fill-[#EE6427]" />
+          <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-900/60 text-xs space-y-1">
+            <span className="font-bold text-orange-950 dark:text-orange-300 flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 text-[#EE6427]" />
               <span>Conversion Impact Insight:</span>
             </span>
-            <p className="text-orange-900/90 dark:text-orange-300/90 leading-relaxed">
-              Leads contacted under 5 minutes on WhatsApp and Facebook convert at <strong>391% higher frequency</strong> than leads contacted after 30 minutes. Setting a strict 5-minute escalation policy guarantees real estate agents reach prospective buyers before they click on competing listings.
+            <p className="text-orange-900 dark:text-orange-300/90 leading-relaxed">
+              Leads contacted under 5 minutes on WhatsApp and Facebook convert at <strong>391% higher frequency</strong> than leads contacted after 30 minutes. Setting a strict 5-minute escalation policy guarantees real estate agents reach buyers before they click on competing Zameen.com listings.
             </p>
           </div>
         </div>
       )}
 
-      {/* TAB 4: ESCALATION AUDIT LOG */}
+      {/* TAB 4: ESCALATION LOG */}
       {activeTab === "escalation_log" && (
         <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
           <div className="p-4 bg-slate-50 dark:bg-slate-850 border-b border-slate-200 dark:border-slate-800">
@@ -1088,11 +872,11 @@ function SpeedToLeadContent() {
 
           <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
             {escalationLogs.map((log) => (
-              <div key={log.id} className="p-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 flex items-start justify-between gap-4 transition-colors">
+              <div key={log.id} className="p-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 flex items-start justify-between gap-4">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-2">
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                         log.eventType === "auto_reassign"
                           ? "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
                           : log.eventType === "manager_alert"
@@ -1115,7 +899,7 @@ function SpeedToLeadContent() {
                   <span className="font-mono text-slate-500 text-[11px] block">
                     {new Date(log.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
-                  <span className="text-[10px] text-slate-400 font-mono">
+                  <span className="text-[10px] text-slate-400">
                     Elapsed: {log.elapsedMinutes.toFixed(1)}m (Target: {log.targetMinutes}m)
                   </span>
                 </div>

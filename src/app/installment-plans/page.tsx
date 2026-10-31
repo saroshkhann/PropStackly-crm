@@ -204,38 +204,45 @@ function InstallmentPlansContent() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-6">
       {/* 1. PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 pt-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
-            Installment Recovery
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EE6427]/10 text-[#EE6427] border border-[#EE6427]/20 uppercase font-mono flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EE6427] animate-pulse" />
+              Pakistani Project Recovery Engine
+            </span>
+            <span className="text-xs text-slate-400">
+              Park View • Smart City • Eighteen • DHA Files
+            </span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <Calendar className="w-6 h-6 text-[#EE6427]" />
+            <span>3-to-4 Year Installment Plans & Recovery Ledger (قسط وار کھاتہ)</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
-            <span>Park View, Smart City, Eighteen & DHA files</span>
-            <span>•</span>
-            <span>Automate milestone tracking, developer commissions & WhatsApp reminders.</span>
-            <span className="text-[#EE6427] font-bold">✨</span>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Automate quarterly milestone tracking, developer commission releases, and 1-click WhatsApp payment reminders
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setIsPlanModalOpen(true)}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 text-xs font-medium shadow-xs transition-all cursor-pointer active:scale-95 shrink-0 self-start sm:self-auto"
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#EE6427] hover:bg-[#DE5518] text-white text-xs font-bold shadow-md transition-all cursor-pointer shrink-0 self-start sm:self-auto"
         >
-          <Plus className="w-3.5 h-3.5" />
-          <span>+ New Installment Plan</span>
+          <Plus className="w-4 h-4" />
+          <span>New Installment Plan</span>
         </button>
       </div>
 
       {/* 2. RECOVERY PERFORMANCE METRICS */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs space-y-1">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
             Portfolio Under Installments
           </span>
-          <div className="text-lg sm:text-xl font-bold font-mono text-slate-950 dark:text-white truncate">
+          <div className="text-lg sm:text-xl font-black font-mono text-slate-900 dark:text-white truncate">
             {formatPKR(analytics.totalPortfolioPKR)}
           </div>
           <span className="text-xs text-slate-500 font-medium">
@@ -243,11 +250,11 @@ function InstallmentPlansContent() {
           </span>
         </div>
 
-        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs space-y-1">
+        <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 shadow-2xs space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">
             Total Collected to Date
           </span>
-          <div className="text-lg sm:text-xl font-bold font-mono text-emerald-700 dark:text-emerald-300 truncate">
+          <div className="text-lg sm:text-xl font-black font-mono text-emerald-800 dark:text-emerald-200 truncate">
             {formatPKR(analytics.totalCollectedPKR)}
           </div>
           <span className="text-xs text-emerald-600 font-bold">
@@ -255,11 +262,11 @@ function InstallmentPlansContent() {
           </span>
         </div>
 
-        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs space-y-1">
+        <div className="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 shadow-2xs space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400 block">
             Overdue / Default Risk
           </span>
-          <div className="text-lg sm:text-xl font-bold font-mono text-rose-700 dark:text-rose-300 truncate">
+          <div className="text-lg sm:text-xl font-black font-mono text-rose-800 dark:text-rose-200 truncate">
             {formatPKR(analytics.totalOverduePKR)}
           </div>
           <span className="text-xs text-rose-600 font-semibold flex items-center gap-1">
@@ -268,7 +275,7 @@ function InstallmentPlansContent() {
           </span>
         </div>
 
-        <div className="ember-card p-5 rounded-[20px] bg-slate-950 text-white shadow-2xs space-y-1">
+        <div className="p-4 rounded-2xl bg-slate-900 text-white shadow-2xs space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
             Agency Commission Unlocked
           </span>

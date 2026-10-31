@@ -149,26 +149,28 @@ function ReportsContent() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pt-1">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
-            Reports & Intelligence
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
-            <span>Executive performance & acquisition attribution</span>
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+            <span>Executive Intelligence</span>
             <span>•</span>
-            <span>Conversion funnel, society deal volumes & channel ROI.</span>
-            <span className="text-[#EE6427] font-bold">✨</span>
+            <span className="text-[#EE6427] font-bold">Q3 Real Estate Analytics</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-950 dark:text-slate-100 tracking-tight">
+            Agency Performance & Pipeline Reports
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Conversion funnel, society deal volumes, and sales marketing attribution
           </p>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2.5">
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-3 py-1.5 text-xs font-medium rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-hidden shadow-2xs cursor-pointer"
+            className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-[#EE6427]/60 shadow-2xs cursor-pointer"
           >
             <option value="This Month">This Month (October 2026)</option>
             <option value="Q3 - 2026">Quarter 3 (Jul - Sep 2026)</option>
@@ -177,10 +179,10 @@ function ReportsContent() {
 
           <button
             onClick={handleExportReport}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800/90 hover:bg-slate-50 border border-black/[0.06] dark:border-white/[0.08] rounded-xl shadow-2xs transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xs transition-colors cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5 text-slate-400" />
-            <span>Export CSV</span>
+            <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+            Export Report (CSV)
           </button>
         </div>
       </div>
@@ -363,7 +365,7 @@ function ReportsContent() {
       </div>
 
       {/* Speed-to-Lead SLA Performance Banner */}
-      <div className="p-5 bg-orange-50/80 dark:bg-slate-900 rounded-2xl border border-orange-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="p-5 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-100 dark:from-slate-900 dark:via-slate-850 dark:to-slate-900 rounded-xl border border-orange-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#EE6427] text-white flex items-center justify-center font-bold shrink-0">
             <Zap className="w-5 h-5" />
