@@ -658,7 +658,7 @@ function LeadDetailInner({ leadId }: { leadId: string }) {
             ) : (
               <button
                 onClick={() => setShowDealModal(true)}
-                className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 rounded-lg shadow-xs transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-colors cursor-pointer"
                 title="Initiate Pakistani Deal (Token → Bayana → NOC → Transfer)"
               >
                 <Handshake className="w-3.5 h-3.5" />
@@ -1051,7 +1051,7 @@ function LeadDetailInner({ leadId }: { leadId: string }) {
           {activeTab === "matches" && (
             <div className="space-y-4 animate-in fade-in duration-200">
               {/* Filter and Overview Banner */}
-              <div className="p-4 bg-gradient-to-r from-orange-50/60 to-slate-50 dark:from-slate-850 dark:to-slate-900 rounded-xl border border-orange-200/60 dark:border-orange-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 bg-orange-50/70 dark:bg-slate-800 rounded-xl border border-orange-200/60 dark:border-orange-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
                 <div className="space-y-0.5">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">

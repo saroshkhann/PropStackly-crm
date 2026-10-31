@@ -60,27 +60,27 @@ const STAGES: StageConfig[] = [
     id: "bayana",
     label: "Bayana Stage",
     sublabel: "Signed Iqrarnama / Stamp Paper",
-    badgeBg: "bg-amber-50 text-amber-700",
-    textColor: "text-amber-700",
-    borderColor: "border-amber-200",
+    badgeBg: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400",
+    textColor: "text-amber-700 dark:text-amber-400",
+    borderColor: "border-amber-200 dark:border-amber-800/60",
     icon: FileCheck,
   },
   {
     id: "noc_verification",
     label: "NOC & Verification",
     sublabel: "DHA / Society NDC Clearance",
-    badgeBg: "bg-cyan-50 text-cyan-700",
-    textColor: "text-cyan-700",
-    borderColor: "border-cyan-200",
+    badgeBg: "bg-cyan-50 dark:bg-cyan-950/40 text-cyan-700 dark:text-cyan-400",
+    textColor: "text-cyan-700 dark:text-cyan-400",
+    borderColor: "border-cyan-200 dark:border-cyan-800/60",
     icon: ShieldCheck,
   },
   {
     id: "final_transfer",
     label: "Final Transfer",
     sublabel: "Registry & Balance Settlement",
-    badgeBg: "bg-purple-50 text-purple-700",
-    textColor: "text-purple-700",
-    borderColor: "border-purple-200",
+    badgeBg: "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-400",
+    textColor: "text-purple-700 dark:text-purple-400",
+    borderColor: "border-purple-200 dark:border-purple-800/60",
     icon: Building,
   },
   {
@@ -246,36 +246,31 @@ function DealsContent() {
   }, [deals]);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-fade-in">
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pt-1">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-100 dark:bg-orange-950/60 text-orange-950 dark:text-orange-200 border border-orange-300 dark:border-orange-800">
-              Pakistani Deal Flow Architecture
-            </span>
-          </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <Handshake className="w-7 h-7 text-[#EE6427]" />
-            Deals & Commission Settlement Pipeline
+          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
+            Deals & Settlements
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Specialized Pakistani transaction stages: <strong>Token</strong> (Holding Advance) →{" "}
-            <strong>Bayana</strong> (Iqrarnama) → <strong>NOC & NDC</strong> →{" "}
-            <strong>Final Society Transfer & 50/50 Splits</strong>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+            <span>Pakistani deal flow architecture</span>
+            <span>•</span>
+            <span>Token → Bayana (Iqrarnama) → NOC / NDC → Registry Settlement.</span>
+            <span className="text-[#EE6427] font-bold">✨</span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => {
               setCalculatorPrice(50_000_000);
               setCalculatorOpen(true);
             }}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold shadow-sm transition-all"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800/90 border border-black/[0.06] dark:border-white/[0.08] hover:bg-slate-50 text-slate-700 dark:text-slate-200 text-xs font-medium shadow-2xs transition-all cursor-pointer"
           >
-            <Calculator className="w-4 h-4 text-[#EE6427]" />
-            Commission Calculator
+            <Calculator className="w-3.5 h-3.5 text-[#EE6427]" />
+            <span>Commission Calc</span>
           </button>
 
           <button
@@ -287,10 +282,10 @@ function DealsContent() {
                 setLegalModalOpen(true);
               }
             }}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-amber-300 dark:border-amber-800/80 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/50 text-amber-900 dark:text-amber-200 text-xs font-bold shadow-sm transition-all"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-200/80 dark:border-amber-800/80 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 text-amber-900 dark:text-amber-200 text-xs font-semibold shadow-2xs transition-all cursor-pointer"
           >
-            <Scale className="w-4 h-4 text-[#EE6427]" />
-            Legal Suite & Iqrarnama
+            <Scale className="w-3.5 h-3.5 text-[#EE6427]" />
+            <span>Iqrarnama Suite</span>
           </button>
 
           <button
@@ -298,10 +293,10 @@ function DealsContent() {
               setSelectedDealToEdit(null);
               setDealModalOpen(true);
             }}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#EE6427] hover:bg-[#DE5518] text-white text-xs font-bold shadow-md shadow-md shadow-[#EE6427]/25 transition-all"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 text-xs font-medium shadow-xs transition-all cursor-pointer active:scale-95"
           >
-            <Plus className="w-4 h-4" />
-            Initiate Deal / Token
+            <Plus className="w-3.5 h-3.5" />
+            <span>Initiate Deal</span>
           </button>
         </div>
       </div>
@@ -309,66 +304,66 @@ function DealsContent() {
       {/* KPI Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Active Pipeline Value */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-          <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs hover:shadow-xs transition-all relative overflow-hidden">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
             Active Deal Volume
           </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white font-mono">
+          <div className="text-2xl font-bold text-slate-900 dark:text-white font-mono">
             {formatPKR(metrics.totalDealValue)}
           </div>
           <div className="text-xs text-slate-500 mt-1 flex items-center gap-1">
             <span>{deals.filter((d) => d.stage !== "completed" && d.stage !== "cancelled").length} active deal milestones</span>
           </div>
-          <div className="absolute right-3 top-3 p-2 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#EE6427]">
-            <Handshake className="w-5 h-5" />
+          <div className="absolute right-4 top-4 p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+            <Handshake className="w-4 h-4" />
           </div>
         </div>
 
         {/* Token Money Secured */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-          <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs hover:shadow-xs transition-all relative overflow-hidden">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
             Token Advance Secured
           </div>
-          <div className="text-2xl font-black text-[#DE5518] dark:text-orange-400 font-mono">
+          <div className="text-2xl font-bold text-[#DE5518] dark:text-orange-400 font-mono">
             {formatPKR(metrics.totalTokens)}
           </div>
           <div className="text-xs text-[#EE6427] font-medium mt-1">
             Holding advances & booking locks
           </div>
-          <div className="absolute right-3 top-3 p-2 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#EE6427]">
-            <Banknote className="w-5 h-5" />
+          <div className="absolute right-4 top-4 p-2 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#EE6427]">
+            <Banknote className="w-4 h-4" />
           </div>
         </div>
 
         {/* Projected 2% Brokerage */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-          <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs hover:shadow-xs transition-all relative overflow-hidden">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
             Total Pipeline Brokerage (2%)
           </div>
-          <div className="text-2xl font-black text-[#EE6427] dark:text-orange-400 font-mono">
+          <div className="text-2xl font-bold text-slate-950 dark:text-white font-mono">
             {formatPKR(metrics.totalCommission)}
           </div>
           <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             50% Agency / 50% Consultant Split
           </div>
-          <div className="absolute right-3 top-3 p-2 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#EE6427]">
-            <Calculator className="w-5 h-5" />
+          <div className="absolute right-4 top-4 p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+            <Calculator className="w-4 h-4" />
           </div>
         </div>
 
         {/* Settled Commission */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden">
-          <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs hover:shadow-xs transition-all relative overflow-hidden">
+          <div className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
             Realized Closed Brokerage
           </div>
-          <div className="text-2xl font-black text-purple-700 dark:text-purple-400 font-mono">
+          <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono">
             {formatPKR(metrics.closedCommission)}
           </div>
-          <div className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-1">
+          <div className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">
             Society transfers completed
           </div>
-          <div className="absolute right-3 top-3 p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400">
-            <CheckCircle2 className="w-5 h-5" />
+          <div className="absolute right-4 top-4 p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
+            <CheckCircle2 className="w-4 h-4" />
           </div>
         </div>
       </div>

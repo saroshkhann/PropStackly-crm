@@ -101,77 +101,75 @@ function PropertiesContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pt-1">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-            <span>Inventory Management</span>
-            <span>•</span>
-            <span className="text-[#EE6427] font-bold">{properties.length} Active Listings</span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight">
-            Property Inventory
+          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
+            Active Inventory
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Villas, residential plots, commercial floors, and luxury penthouses
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+            <span>{properties.length} verified listings in Islamabad, Rawalpindi & Lahore</span>
+            <span>•</span>
+            <span>DHA, Bahria & Gulberg plots.</span>
+            <span className="text-[#EE6427] font-bold">✨</span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 flex-wrap">
           <Link
             href="/plot-maps"
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-amber-900 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/60 border border-amber-300 dark:border-amber-800 rounded-lg shadow-2xs transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-amber-900 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 border border-amber-200/80 dark:border-amber-800/80 rounded-xl shadow-2xs transition-colors"
             title="Open Interactive DHA & Bahria Blueprint Sector Maps"
           >
             <Map className="w-3.5 h-3.5 text-[#EE6427]" />
-            <span>Society Plot Maps</span>
+            <span>Plot Maps</span>
           </Link>
 
           {/* View toggle */}
-          <div className="flex items-center p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-2xs">
+          <div className="flex items-center p-0.5 bg-slate-100 dark:bg-slate-800 border border-black/[0.04] dark:border-white/[0.06] rounded-xl">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-1.5 rounded-md transition-colors ${
-                viewMode === "grid" ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                viewMode === "grid" ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-2xs" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               }`}
               title="Grid View"
             >
-              <Grid className="w-4 h-4" />
+              <Grid className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode("table")}
-              className={`p-1.5 rounded-md transition-colors ${
-                viewMode === "table" ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white" : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                viewMode === "table" ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-2xs" : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
               }`}
               title="Table View"
             >
-              <List className="w-4 h-4" />
+              <List className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {isManager ? (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#EE6427] hover:bg-[#DE5518] rounded-lg shadow-sm transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-white bg-slate-950 dark:bg-white dark:text-slate-950 hover:bg-slate-800 rounded-xl shadow-xs transition-all cursor-pointer active:scale-95"
             >
-              <Plus className="w-4 h-4" />
-              + Add Property
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Add Property</span>
             </button>
           ) : (
             <div
               title="Only Agency Managers and Owners can add inventory"
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-not-allowed"
             >
               <Lock className="w-3.5 h-3.5" />
-              Add Inventory (Manager Only)
+              <span>Manager Only</span>
             </div>
           )}
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xs">
+      <div className="ember-card p-5 bg-white dark:bg-slate-900 rounded-[20px] border border-black/[0.06] dark:border-white/[0.08] shadow-2xs">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -243,9 +241,9 @@ function PropertiesContent() {
         </div>
 
         {/* Multi-Currency & Overseas Conversion Bar */}
-        <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-slate-600">Active Valuation Currency:</span>
+            <span className="font-semibold text-slate-600 dark:text-slate-400">Active Valuation Currency:</span>
             <CurrencySelector />
           </div>
           <span className="text-[11px] text-slate-400 hidden sm:inline">
@@ -271,7 +269,7 @@ function PropertiesContent() {
               return (
                 <div
                   key={prop.id}
-                  className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden hover:shadow-md transition-shadow flex flex-col group"
+                  className="ember-card bg-white dark:bg-slate-900 rounded-[20px] border border-black/[0.06] dark:border-white/[0.08] shadow-2xs overflow-hidden hover:shadow-xs transition-all flex flex-col group"
                 >
                   {/* Image Container */}
                   <div className="relative h-48 bg-slate-100 dark:bg-slate-800 overflow-hidden">
@@ -400,7 +398,7 @@ function PropertiesContent() {
         </div>
       ) : (
         /* Table View */
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xs overflow-hidden">
+        <div className="ember-card bg-white dark:bg-slate-900 rounded-[20px] border border-black/[0.06] dark:border-white/[0.08] shadow-2xs overflow-hidden">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-semibold uppercase text-[11px]">

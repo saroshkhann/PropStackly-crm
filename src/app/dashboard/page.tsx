@@ -3,25 +3,26 @@
 import React, { useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { MetricCard } from "@/components/dashboard/MetricCard";
-import { LeadSourceChart } from "@/components/dashboard/LeadSourceChart";
 import { WeeklyConversionChart } from "@/components/dashboard/WeeklyConversionChart";
+import { RecentPayoutsList } from "@/components/dashboard/RecentPayoutsList";
 import { TodayFollowUps } from "@/components/dashboard/TodayFollowUps";
-import { RecentActivityFeed } from "@/components/dashboard/RecentActivityFeed";
 import { UpcomingSiteVisits } from "@/components/dashboard/UpcomingSiteVisits";
+import { LeadSourceChart } from "@/components/dashboard/LeadSourceChart";
 import { AddLeadModal } from "@/components/leads/AddLeadModal";
 import { useCRM } from "@/context/CRMContext";
 import { formatPKR } from "@/lib/formatters";
 import {
   Users,
   UserPlus,
-  CalendarCheck,
   Compass,
   DollarSign,
   TrendingUp,
   Download,
-  Building,
-  Sparkles,
-  PhoneCall,
+  Flame,
+  Zap,
+  Handshake,
+  ShieldCheck,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -81,148 +82,116 @@ function DashboardContent() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-2xs">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12 select-none">
+      {/* Editorial Header Section matching reference image ("October so far") */}
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 pt-1">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#EE6427] mb-1">
-            <span className="w-2 h-2 rounded-full bg-[#EE6427] animate-pulse" />
-            PropStackly Real Estate Operating System
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-950 dark:text-white tracking-tight">
-            Welcome back, {currentAgent?.name || "Principal Broker"}
+          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
+            October so far
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {settings?.agencyName || "Real Estate Agency"} • {settings?.city || "Islamabad"} Portfolio Overview
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+            <span>{settings?.agencyName || "Apex Properties"} {settings?.city || "Islamabad"}</span>
+            <span>•</span>
+            <span>{activeLeads.length} leads actively progressing.</span>
+            <span className="text-[#EE6427] font-bold">✨</span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        {/* Quick Action Pills */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <Link
+            href="/speed-to-lead"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 border border-emerald-200/80 dark:border-emerald-800/80 rounded-xl shadow-2xs transition-colors cursor-pointer"
+          >
+            <Zap className="w-3.5 h-3.5 text-emerald-600" />
+            <span>5m SLA Active</span>
+          </Link>
           <button
             onClick={handleExportDashboard}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800/90 hover:bg-slate-50 border border-black/[0.06] dark:border-white/[0.08] rounded-xl shadow-2xs transition-colors cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5 text-slate-500" />
-            Export Summary
+            <Download className="w-3.5 h-3.5 text-slate-400" />
+            <span>Export CSV</span>
           </button>
           <button
             onClick={() => setIsAddLeadOpen(true)}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#EE6427] hover:bg-[#DE5518] rounded-lg shadow-md shadow-[#EE6427]/25 transition-all cursor-pointer active:scale-95"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-white bg-slate-950 dark:bg-white dark:text-slate-950 hover:bg-slate-800 rounded-xl shadow-xs transition-all cursor-pointer active:scale-95"
           >
-            <UserPlus className="w-4 h-4" />
-            + New Lead
+            <UserPlus className="w-3.5 h-3.5" />
+            <span>+ New Lead</span>
           </button>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      {/* Top Metric Cards Row (4 cards matching the reference image top row) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <MetricCard
-          title="Total Leads"
-          value={totalLeads}
-          change="+18%"
-          isPositive={true}
-          subtitle="All active channels"
-          icon={Users}
-          iconColor="text-[#EE6427]"
-          iconBg="bg-orange-50 dark:bg-orange-950/40"
-        />
-        <MetricCard
-          title="New Enquiries"
-          value={newLeads}
-          change="+6 today"
-          isPositive={true}
-          subtitle="Awaiting response"
-          icon={UserPlus}
-          iconColor="text-emerald-600"
-          iconBg="bg-emerald-50"
-        />
-        <MetricCard
-          title="Follow-ups Due"
-          value={pendingFollowups}
-          change="3 Overdue"
-          isPositive={false}
-          subtitle="Phone & WhatsApp"
-          icon={CalendarCheck}
-          iconColor="text-amber-600"
-          iconBg="bg-amber-50"
-        />
-        <MetricCard
-          title="Site Visits"
-          value={upcomingVisits}
-          change="2 this week"
-          isPositive={true}
-          subtitle="DHA & Bahria"
-          icon={Compass}
-          iconColor="text-purple-600"
-          iconBg="bg-purple-50"
-        />
-        <MetricCard
-          title="Pipeline Volume"
+          title="Gross pipeline volume"
           value={formatPKR(totalPipelinePKR)}
-          change="+PKR 8.2 Cr"
+          change="+18.2% vs. Sept"
           isPositive={true}
-          subtitle="Active buyer interest"
+          subtitle="Buyer budgets"
           icon={DollarSign}
-          iconColor="text-sky-600"
-          iconBg="bg-sky-50"
+          velocityPercent={76}
+          barColor="slate"
         />
         <MetricCard
-          title="Conversion Rate"
-          value={`${conversionRate}%`}
-          change="+2.4%"
+          title="Active inquiries"
+          value={totalLeads}
+          change={`+${newLeads} new today`}
           isPositive={true}
-          subtitle={`${wonDealsCount} deals closed`}
-          icon={TrendingUp}
-          iconColor="text-emerald-600"
-          iconBg="bg-emerald-50"
+          subtitle="Facebook & Zameen"
+          icon={Users}
+          velocityPercent={62}
+          barColor="orange"
+        />
+        <MetricCard
+          title="Closed transactions"
+          value={wonDealsCount}
+          change={`${conversionRate}% conversion`}
+          isPositive={true}
+          subtitle="Won deals"
+          icon={Handshake}
+          velocityPercent={58}
+          barColor="emerald"
+        />
+        <MetricCard
+          title="Speed-to-lead response"
+          value="2.4 min"
+          change="Target < 5.0m"
+          isPositive={true}
+          subtitle="391% boost"
+          icon={Zap}
+          velocityPercent={88}
+          barColor="sky"
         />
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xs p-5">
-          <div className="flex items-center justify-between mb-4">
+      {/* Middle Row: Acquisition Chart (2 cols) + Recent Payouts List (1 col) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="lg:col-span-2 ember-card p-5 sm:p-6 bg-white dark:bg-slate-900 rounded-[20px] border border-black/[0.06] dark:border-white/[0.08] shadow-2xs hover:shadow-xs transition-all">
+          <div className="flex items-center justify-between mb-2">
             <div>
-              <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
-                Weekly Lead Acquisition & Site Visits
+              <h2 className="text-sm font-semibold text-slate-950 dark:text-white tracking-tight">
+                Gross Acquisition & Volume
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Daily volume of incoming buyer enquiries vs. scheduled tours
+                Incoming enquiries and closed transaction progression
               </p>
-            </div>
-            <div className="flex items-center gap-3 text-xs font-medium">
-              <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#EE6427]" />
-                Enquiries
-              </span>
-              <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                Site Visits
-              </span>
             </div>
           </div>
           <WeeklyConversionChart />
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/90 dark:border-slate-800 shadow-2xs p-5">
-          <div className="mb-4">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
-              Enquiries by Lead Source
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Facebook Ads, Zameen.com & WhatsApp marketing attribution
-            </p>
-          </div>
-          <LeadSourceChart />
-        </div>
+        {/* Payouts / Deal settlements card directly from reference image */}
+        <RecentPayoutsList />
       </div>
 
-      {/* Actionable Tri-Column Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Bottom Tri-Column Row: Follow-ups, Site Visits, Source Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <TodayFollowUps />
         <UpcomingSiteVisits />
-        <RecentActivityFeed />
+        <LeadSourceChart />
       </div>
 
       {/* Add Lead Modal */}

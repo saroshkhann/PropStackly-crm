@@ -165,7 +165,7 @@ export function TrialUpgradeModal({ isOpen, onClose }: TrialUpgradeModalProps) {
         </button>
 
         {/* HEADER */}
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800 bg-gradient-to-r from-slate-950 via-slate-900 to-orange-950 text-white shrink-0">
+        <div className="p-6 border-b border-slate-800 bg-slate-950 text-white shrink-0">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/20 text-orange-400 border border-orange-400/30 flex items-center gap-1">
               <Sparkles className="w-3 h-3" />

@@ -184,45 +184,38 @@ function RentalsContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* 1. PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 pt-1">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EE6427]/10 text-[#EE6427] border border-[#EE6427]/20 uppercase font-mono flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#EE6427] animate-pulse" />
-              Pakistani Residential & Commercial Leasing
-            </span>
-            <span className="text-xs text-slate-400">
-              Islamabad • Rawalpindi • Lahore • Karachi
-            </span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Key className="w-6 h-6 text-[#EE6427]" />
-            <span>House & Apartment Rent Management (کرایہ داری مینجمنٹ)</span>
+          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
+            Rentals & Leases
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Legal Tenancy Agreements (کرایہ نامہ), monthly rent recovery ledger, Police verification forms, and WhatsApp reminders
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+            <span>Pakistani residential & commercial leasing</span>
+            <span>•</span>
+            <span>Kirayanama contracts, monthly rent recovery & police verification.</span>
+            <span className="text-[#EE6427] font-bold">✨</span>
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#EE6427] hover:bg-[#DE5518] text-white text-xs font-bold shadow-md transition-all cursor-pointer shrink-0 self-start sm:self-auto"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 text-xs font-medium shadow-xs transition-all cursor-pointer active:scale-95 shrink-0 self-start sm:self-auto"
         >
-          <Plus className="w-4 h-4" />
-          <span>New Tenancy Lease</span>
+          <Plus className="w-3.5 h-3.5" />
+          <span>+ New Tenancy Lease</span>
         </button>
       </div>
 
       {/* 2. RENTAL ROLL FINANCIAL KPIS */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-1">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
             Total Monthly Rent Roll
           </span>
-          <div className="text-lg sm:text-xl font-black font-mono text-slate-900 dark:text-white truncate">
+          <div className="text-lg sm:text-xl font-bold font-mono text-slate-950 dark:text-white truncate">
             {formatPKR(metrics.monthlyRentRollPKR)}
           </div>
           <span className="text-xs text-slate-500 font-medium">
@@ -230,11 +223,11 @@ function RentalsContent() {
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 shadow-2xs space-y-1">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block">
             Security Deposits Held
           </span>
-          <div className="text-lg sm:text-xl font-black font-mono text-emerald-800 dark:text-emerald-200 truncate">
+          <div className="text-lg sm:text-xl font-bold font-mono text-emerald-700 dark:text-emerald-300 truncate">
             {formatPKR(metrics.totalSecurityDepositPKR)}
           </div>
           <span className="text-xs text-emerald-600 font-bold">
@@ -242,11 +235,11 @@ function RentalsContent() {
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 shadow-2xs space-y-1">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs space-y-1">
           <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400 block">
             Overdue Rent Alert
           </span>
-          <div className="text-lg sm:text-xl font-black font-mono text-rose-800 dark:text-rose-200 truncate">
+          <div className="text-lg sm:text-xl font-bold font-mono text-rose-700 dark:text-rose-300 truncate">
             {formatPKR(metrics.totalOverdueRentPKR)}
           </div>
           <span className="text-xs text-rose-600 font-semibold flex items-center gap-1">

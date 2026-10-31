@@ -127,38 +127,31 @@ function PlotMapsContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 pt-1">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#EE6427]/10 text-[#EE6427] border border-[#EE6427]/20 uppercase font-mono flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#EE6427] animate-pulse" />
-              Pakistani Real Estate Inventory
-            </span>
-            <span className="text-xs text-slate-400">
-              DHA • Bahria Town • CDA • Gulberg
-            </span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <Map className="w-6 h-6 text-[#EE6427]" />
-            <span>Society Plot Maps & Sector Grid</span>
+          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
+            Society Plot Maps
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Interactive master blueprint maps, corner/park premium categorization, and 1-click deal initiation
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+            <span>DHA, Bahria Town, CDA & Gulberg blueprints</span>
+            <span>•</span>
+            <span>Interactive master sector grids, corner/park premiums & instant deal creation.</span>
+            <span className="text-[#EE6427] font-bold">✨</span>
           </p>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
           {/* View Mode Toggle */}
-          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-black/[0.04] dark:border-white/[0.06]">
             <button
               type="button"
               onClick={() => setViewMode("map")}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "map"
-                  ? "bg-white dark:bg-slate-700 text-slate-950 dark:text-white shadow-xs"
+                  ? "bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xs"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900"
               }`}
             >
@@ -168,24 +161,24 @@ function PlotMapsContent() {
             <button
               type="button"
               onClick={() => setViewMode("table")}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "table"
-                  ? "bg-white dark:bg-slate-700 text-slate-950 dark:text-white shadow-xs"
+                  ? "bg-white dark:bg-slate-900 text-slate-950 dark:text-white shadow-2xs"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900"
               }`}
             >
               <List className="w-3.5 h-3.5" />
-              <span>Table Inventory</span>
+              <span>Table View</span>
             </button>
           </div>
 
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#EE6427] hover:bg-[#DE5518] text-white text-xs font-bold shadow-md transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 text-xs font-medium shadow-xs transition-all cursor-pointer active:scale-95"
           >
-            <Plus className="w-4 h-4" />
-            <span>Add Plot</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>+ Add Plot</span>
           </button>
         </div>
       </div>

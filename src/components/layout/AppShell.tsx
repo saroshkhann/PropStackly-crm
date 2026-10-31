@@ -14,7 +14,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <CRMProvider>
-      <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
+      <div className="flex h-screen overflow-hidden bg-[#F7F7F5] dark:bg-[#0E1217] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
         {/* Sidebar */}
         <Sidebar
           mobileOpen={mobileSidebarOpen}
@@ -33,7 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <TrialExpiredBanner />
 
           {/* Main scrollable body */}
-          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#F7F7F5] dark:bg-[#0E1217] transition-colors duration-200">
             <div className="max-w-7xl mx-auto w-full">{children}</div>
           </main>
         </div>

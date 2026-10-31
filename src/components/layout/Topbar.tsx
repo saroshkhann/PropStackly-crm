@@ -8,34 +8,28 @@ import {
   Building,
   UserCheck,
   ChevronDown,
-  PhoneCall,
   Bell,
-  Sparkles,
   X,
   ExternalLink,
-  LogOut,
   ShieldCheck,
-  Clock,
-  AlertTriangle,
-  MessageSquare,
   CheckCheck,
-  Trash2,
-  AlertCircle,
   Volume2,
   Zap,
+  Home,
+  Calendar as CalendarIcon,
+  Download,
 } from "lucide-react";
 import { useCRM } from "@/context/CRMContext";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { formatPKR, formatPhoneNumber } from "@/lib/formatters";
 import { CurrencySelector } from "@/components/ui/CurrencySelector";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { TrialBadge } from "@/components/trial/TrialBadge";
 
 function formatRelativeTime(isoString: string): string {
   try {
     if (!isoString) return "";
     let s = String(isoString).trim();
-    // If backend returns an ISO string without timezone indicator (e.g. SQLite naive UTC), append 'Z'
     if (s.includes("T") && !s.endsWith("Z") && !/[+-]\d{2}(:\d{2})?$/.test(s)) {
       s += "Z";
     }
@@ -60,6 +54,7 @@ interface TopbarProps {
 }
 
 export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
+  const pathname = usePathname();
   const {
     currentAgent,
     agents,
@@ -80,13 +75,35 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
     markNotificationRead,
     markAllNotificationsRead,
     deleteNotification,
+    showToast,
   } = useCRM();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showAgentMenu, setShowAgentMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notificationTab, setNotificationTab] = useState<"all" | "unread">("all");
   const [isTestingPush, setIsTestingPush] = useState(false);
+
+  // Derive current page title for breadcrumb capsule
+  const getPageTitle = () => {
+    if (pathname === "/dashboard" || pathname === "/") return "Overview";
+    if (pathname.startsWith("/leads")) return "Leads";
+    if (pathname.startsWith("/speed-to-lead")) return "Speed-to-Lead";
+    if (pathname.startsWith("/properties")) return "Properties";
+    if (pathname.startsWith("/plot-maps")) return "Plot Maps";
+    if (pathname.startsWith("/deals")) return "Deals & Pipeline";
+    if (pathname.startsWith("/installment-plans")) return "Installment Recovery";
+    if (pathname.startsWith("/rentals")) return "Rentals & Leases";
+    if (pathname.startsWith("/commissions")) return "Commissions";
+    if (pathname.startsWith("/tax-calculator")) return "FBR Tax Calculator";
+    if (pathname.startsWith("/follow-ups")) return "Follow-ups";
+    if (pathname.startsWith("/site-visits")) return "Site Visits";
+    if (pathname.startsWith("/team")) return "Team & Agents";
+    if (pathname.startsWith("/reports")) return "Reports";
+    if (pathname.startsWith("/settings")) return "Settings";
+    return "Workspace";
+  };
 
   // Quick filter matching leads and properties for top search
   const filteredLeads = searchQuery.trim()
@@ -113,67 +130,94 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
         .slice(0, 3)
     : [];
 
+  const handleExportQuick = () => {
+    showToast("Exporting pipeline snapshot (CSV)...");
+    const headers = ["Entity", "Count", "Timestamp"];
+    const rows = [
+      ["Leads", leads.length, new Date().toISOString()],
+      ["Properties", properties.length, new Date().toISOString()],
+      ["Agency", settings?.agencyName || "Apex Properties", new Date().toISOString()],
+    ];
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `PropStackly_Snapshot_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 sm:px-6 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 shadow-2xs transition-colors duration-200">
-      <div className="flex items-center gap-3 sm:gap-4 flex-1">
-        {/* Mobile menu button */}
+    <header className="h-14 bg-[#F7F7F5] dark:bg-[#0E1217] border-b border-[#E8E8E4] dark:border-[#222730] px-3 sm:px-6 flex items-center justify-between shrink-0 select-none z-30">
+      {/* Left Section: Mobile Menu & Breadcrumb Capsule */}
+      <div className="flex items-center gap-2.5">
         <button
           onClick={onMobileOpen}
-          className="lg:hidden p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+          className="lg:hidden p-1.5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-lg transition-colors"
           aria-label="Open sidebar"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Agency Branch Info */}
-        <div className="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/80 text-xs text-slate-700 dark:text-slate-300">
-          <Building className="w-3.5 h-3.5 text-[#EE6427] dark:text-orange-400" />
-          <span className="font-semibold text-slate-900 dark:text-white">{settings.agencyName}</span>
-          <span className="text-slate-400">•</span>
-          <span className="text-slate-500 dark:text-slate-400 font-medium">Blue Area, Islamabad</span>
+        {/* Dynamic Breadcrumb Capsule [ 🏠 Overview ] matching reference image */}
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800/90 border border-black/[0.06] dark:border-white/[0.08] text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs">
+          <Home className="w-3.5 h-3.5 text-slate-400" />
+          <span className="text-slate-300 dark:text-slate-600">/</span>
+          <span className="font-semibold text-slate-900 dark:text-white tracking-tight">
+            {getPageTitle()}
+          </span>
         </div>
+      </div>
 
-        {/* Search Bar with live preview */}
-        <div className="relative flex-1 max-w-md">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+      {/* Right Controls Area matching reference image */}
+      <div className="flex items-center gap-2 sm:gap-2.5">
+        {/* Search Input with ⌘K Badge */}
+        <div className="relative hidden md:block">
+          <div className="relative flex items-center">
+            <Search className="absolute left-2.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search leads, phone (+92...), DHA, Bahria..."
+              placeholder="Search anything..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setShowSearchDropdown(true);
               }}
               onFocus={() => setShowSearchDropdown(true)}
-              className="w-full pl-9 pr-8 py-1.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800/90 hover:bg-slate-100/70 dark:hover:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-hidden focus:ring-2 focus:ring-[#EE6427]/60 focus:border-[#EE6427] transition-all"
+              className="w-44 lg:w-56 pl-8 pr-10 py-1.5 text-xs bg-white dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 border border-black/[0.06] dark:border-white/[0.08] rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 shadow-2xs focus:w-64 focus:outline-hidden transition-all"
             />
+            <span className="absolute right-2 text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-700 px-1 py-0.2 rounded border border-slate-200 dark:border-slate-600 pointer-events-none">
+              ⌘K
+            </span>
             {searchQuery && (
               <button
                 onClick={() => {
                   setSearchQuery("");
                   setShowSearchDropdown(false);
                 }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-8 text-slate-400 hover:text-slate-600 p-0.5"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3 h-3" />
               </button>
             )}
           </div>
 
-          {/* Quick Search Results Dropdown */}
+          {/* Quick Search Dropdown */}
           {showSearchDropdown && searchQuery.trim().length > 0 && (
             <>
               <div
                 className="fixed inset-0 z-30"
                 onClick={() => setShowSearchDropdown(false)}
               />
-              <div className="absolute left-0 right-0 mt-1.5 p-2 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 z-40 max-h-96 overflow-y-auto">
-                <div className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 py-1">
+              <div className="absolute left-0 right-0 mt-1.5 p-2 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-black/[0.08] dark:border-white/[0.08] z-40 max-h-80 overflow-y-auto">
+                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-2 py-1">
                   Matching Leads
                 </div>
                 {filteredLeads.length === 0 ? (
-                  <p className="text-xs text-slate-500 px-2 py-1.5">No leads found</p>
+                  <p className="text-xs text-slate-500 px-2 py-1">No leads found</p>
                 ) : (
                   filteredLeads.map((lead) => (
                     <Link
@@ -183,25 +227,25 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
                       className="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-lg transition-colors group"
                     >
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#EE6427] dark:group-hover:text-orange-400">
+                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#EE6427]">
                           {lead.fullName}
                         </p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                          {formatPhoneNumber(lead.phone)} • {lead.preferredLocations[0] || lead.city}
+                        <p className="text-[10px] text-slate-500">
+                          {formatPhoneNumber(lead.phone)}
                         </p>
                       </div>
-                      <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400 shrink-0">
+                      <span className="text-[11px] font-medium text-slate-600 dark:text-slate-400">
                         {formatPKR(lead.budgetPKR)}
                       </span>
                     </Link>
                   ))
                 )}
 
-                <div className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 pt-2.5 pb-1 border-t border-slate-100 dark:border-slate-800 mt-1">
+                <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-2 pt-2 pb-1 border-t border-slate-100 dark:border-slate-800 mt-1">
                   Matching Properties
                 </div>
                 {filteredProperties.length === 0 ? (
-                  <p className="text-xs text-slate-500 px-2 py-1.5">No properties found</p>
+                  <p className="text-xs text-slate-500 px-2 py-1">No properties found</p>
                 ) : (
                   filteredProperties.map((prop) => (
                     <Link
@@ -211,14 +255,14 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
                       className="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-800/80 rounded-lg transition-colors group"
                     >
                       <div className="min-w-0 pr-2">
-                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#EE6427] dark:group-hover:text-orange-400 truncate">
+                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#EE6427] truncate">
                           {prop.title}
                         </p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                          {prop.location}, {prop.society}
+                        <p className="text-[10px] text-slate-500 truncate">
+                          {prop.society}
                         </p>
                       </div>
-                      <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 shrink-0">
+                      <span className="text-[11px] font-semibold text-emerald-600">
                         {formatPKR(prop.pricePKR)}
                       </span>
                     </Link>
@@ -228,31 +272,24 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
             </>
           )}
         </div>
-      </div>
 
-      {/* Right Action Section */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Live Multi-Currency Switcher */}
+        {/* Currency Switcher */}
         <CurrencySelector compact className="hidden sm:inline-block" />
-
-        {/* Dark / Light Mode Toggle */}
-        <ThemeToggle />
 
         {/* Notifications Popover */}
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            className="relative p-2 text-slate-600 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
             aria-label="Notifications"
-            title={realtimeConnected ? "Notifications (Real-Time Push Active)" : "Notifications"}
           >
-            <Bell className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+            <Bell className="w-4 h-4" />
             {unreadNotificationsCount > 0 ? (
-              <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-[#EE6427] rounded-full border-2 border-white dark:border-slate-900 shadow-xs">
+              <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[17px] h-[17px] px-1 text-[9px] font-bold text-white bg-[#EE6427] rounded-full border-2 border-[#F7F7F5] dark:border-[#0E1217]">
                 {unreadNotificationsCount > 9 ? "9+" : unreadNotificationsCount}
               </span>
             ) : realtimeConnected ? (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900 animate-pulse" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-emerald-500 rounded-full" />
             ) : null}
           </button>
 
@@ -262,23 +299,22 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
                 className="fixed inset-0 z-30"
                 onClick={() => setShowNotifications(false)}
               />
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 z-40 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden animate-in fade-in zoom-in-95">
-                {/* Real-Time Live Status & Actions Bar */}
-                <div className="px-3.5 py-2 bg-orange-50/60 dark:bg-orange-950/20 border-b border-orange-100 dark:border-orange-950/60 flex items-center justify-between">
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-black/[0.08] dark:border-white/[0.08] z-40 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden">
+                {/* Real-time bar */}
+                <div className="px-3.5 py-2 bg-orange-50/70 dark:bg-orange-950/20 border-b border-orange-100 dark:border-orange-950/60 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                     <span
                       className={`w-2 h-2 rounded-full ${
                         realtimeConnected ? "bg-emerald-500 animate-pulse" : "bg-amber-400"
                       }`}
                     />
-                    <span>{realtimeConnected ? "Real-Time Push: Live" : "Push: Connecting..."}</span>
+                    <span>{realtimeConnected ? "Push Engine Live" : "Push: Connecting..."}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => playNotificationChime()}
-                      title="Test Audio Chime Sound"
-                      className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-md transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md hover:bg-slate-50 transition-colors"
                     >
                       <Volume2 className="w-3 h-3 text-[#EE6427]" />
                       Chime
@@ -294,29 +330,23 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
                           setIsTestingPush(false);
                         }
                       }}
-                      title="Trigger a simulated real-time lead assignment push"
-                      className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold text-white bg-[#EE6427] hover:bg-[#d5541d] disabled:opacity-50 rounded-md transition-colors shadow-xs cursor-pointer"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold text-white bg-[#EE6427] hover:bg-[#d5541d] rounded-md transition-colors"
                     >
                       <Zap className="w-3 h-3" />
-                      {isTestingPush ? "Pushed..." : "Test Push"}
+                      Test
                     </button>
                   </div>
                 </div>
 
                 {/* Header */}
-                <div className="p-3.5 bg-slate-50 dark:bg-slate-800/70 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Notifications</span>
-                    {unreadNotificationsCount > 0 && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold bg-orange-100 dark:bg-orange-950/80 text-[#EE6427] dark:text-orange-300 rounded-full border border-orange-200 dark:border-orange-800">
-                        {unreadNotificationsCount} new
-                      </span>
-                    )}
-                  </div>
+                <div className="p-3.5 bg-slate-50/70 dark:bg-slate-800/70 flex items-center justify-between">
+                  <span className="font-bold text-slate-900 dark:text-white text-xs">
+                    Notifications
+                  </span>
                   {unreadNotificationsCount > 0 && (
                     <button
                       onClick={() => markAllNotificationsRead()}
-                      className="flex items-center gap-1 text-[11px] font-semibold text-[#EE6427] dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] font-semibold text-[#EE6427] hover:underline"
                     >
                       <CheckCheck className="w-3.5 h-3.5" />
                       Mark all read
@@ -324,193 +354,86 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
                   )}
                 </div>
 
-                {/* Filter Tabs */}
-                <div className="flex items-center px-3 pt-2 gap-2 text-xs border-b border-slate-100 dark:border-slate-800">
-                  <button
-                    onClick={() => setNotificationTab("all")}
-                    className={`pb-2 px-1 font-semibold text-xs border-b-2 transition-colors cursor-pointer ${
-                      notificationTab === "all"
-                        ? "border-[#EE6427] text-[#EE6427] dark:border-orange-400 dark:text-orange-400"
-                        : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                    }`}
-                  >
-                    All ({notifications.length})
-                  </button>
-                  <button
-                    onClick={() => setNotificationTab("unread")}
-                    className={`pb-2 px-1 font-semibold text-xs border-b-2 transition-colors cursor-pointer ${
-                      notificationTab === "unread"
-                        ? "border-[#EE6427] text-[#EE6427] dark:border-orange-400 dark:text-orange-400"
-                        : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                    }`}
-                  >
-                    Unread ({unreadNotificationsCount})
-                  </button>
-                </div>
-
                 {/* Notifications List */}
-                <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
-                  {notifications
-                    .filter((n) => (notificationTab === "unread" ? !n.is_read : true))
-                    .length === 0 ? (
-                    <div className="p-8 text-center">
-                      <div className="w-10 h-10 mx-auto rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-2">
-                        <Bell className="w-5 h-5" />
-                      </div>
-                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">No notifications</p>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        {notificationTab === "unread"
-                          ? "You have caught up with all reminders!"
-                          : "New lead assignments & follow-up reminders will appear here."}
-                      </p>
-                    </div>
+                <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+                  {notifications.length === 0 ? (
+                    <p className="p-4 text-center text-xs text-slate-400">
+                      No notifications yet
+                    </p>
                   ) : (
-                    notifications
-                      .filter((n) => (notificationTab === "unread" ? !n.is_read : true))
-                      .map((notif) => {
-                        const isUnread = !notif.is_read;
-                        return (
-                          <div
-                            key={notif.id}
-                            className={`p-3 transition-colors flex items-start gap-2.5 group hover:bg-slate-50 dark:hover:bg-slate-800/60 ${
-                              isUnread ? "bg-orange-50/30 dark:bg-orange-950/20" : ""
-                            }`}
+                    notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className={`p-3 text-xs flex items-start justify-between gap-2 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
+                          !n.is_read ? "bg-orange-50/30 dark:bg-orange-950/10" : ""
+                        }`}
+                      >
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-900 dark:text-white">
+                            {n.title}
+                          </p>
+                          <p className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">
+                            {n.message}
+                          </p>
+                          <span className="text-[10px] text-slate-400 mt-1 block">
+                            {formatRelativeTime(n.created_at)}
+                          </span>
+                        </div>
+                        {!n.is_read && (
+                          <button
+                            onClick={() => markNotificationRead(n.id)}
+                            className="text-[#EE6427] text-[10px] font-bold hover:underline shrink-0"
                           >
-                            <div className="mt-0.5 shrink-0">
-                              {notif.type === "lead_assigned" ? (
-                                <div className="w-7 h-7 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-[#EE6427] flex items-center justify-center">
-                                  <UserCheck className="w-4 h-4" />
-                                </div>
-                              ) : notif.type === "followup_overdue" ? (
-                                <div className="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-                                  <AlertTriangle className="w-4 h-4" />
-                                </div>
-                              ) : notif.type === "followup_upcoming" ? (
-                                <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                                  <Clock className="w-4 h-4" />
-                                </div>
-                              ) : notif.type === "whatsapp_sent" ? (
-                                <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                                  <MessageSquare className="w-4 h-4" />
-                                </div>
-                              ) : notif.type === "whatsapp_failed" ? (
-                                <div className="w-7 h-7 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center">
-                                  <AlertCircle className="w-4 h-4" />
-                                </div>
-                              ) : (
-                                <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center">
-                                  <Bell className="w-4 h-4" />
-                                </div>
-                              )}
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between gap-1">
-                                <Link
-                                  href={notif.link_url || "/follow-ups"}
-                                  onClick={() => {
-                                    if (isUnread) markNotificationRead(notif.id);
-                                    setShowNotifications(false);
-                                  }}
-                                  className="text-xs font-semibold text-slate-900 dark:text-white hover:text-[#EE6427] truncate"
-                                >
-                                  {notif.title}
-                                </Link>
-                                <span className="text-[10px] text-slate-400 shrink-0">
-                                  {formatRelativeTime(notif.created_at)}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5 line-clamp-2">
-                                {notif.message}
-                              </p>
-                              <div className="flex items-center justify-between mt-1 pt-1">
-                                {isUnread && (
-                                  <button
-                                    onClick={() => markNotificationRead(notif.id)}
-                                    className="text-[10px] font-semibold text-[#EE6427] hover:underline cursor-pointer"
-                                  >
-                                    Mark read
-                                  </button>
-                                )}
-                                <button
-                                  onClick={() => deleteNotification(notif.id)}
-                                  className="ml-auto text-slate-400 hover:text-rose-600 p-0.5 rounded transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
-                                  title="Dismiss notification"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })
+                            Read
+                          </button>
+                        )}
+                      </div>
+                    ))
                   )}
-                </div>
-
-                {/* Footer */}
-                <div className="p-2.5 bg-slate-50/70 dark:bg-slate-800/70 text-center border-t border-slate-100 dark:border-slate-800">
-                  <Link
-                    href="/follow-ups"
-                    onClick={() => setShowNotifications(false)}
-                    className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-[#EE6427] transition-colors"
-                  >
-                    View All Follow-ups & Reminders →
-                  </Link>
                 </div>
               </div>
             </>
           )}
         </div>
 
-        {/* 3-Day Free Trial / Pro License Badge */}
-        <TrialBadge />
+        {/* Date Range Picker Pill (from reference image) */}
+        <div className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800/90 border border-black/[0.06] dark:border-white/[0.08] text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          <CalendarIcon className="w-3.5 h-3.5 text-slate-400" />
+          <span>Oct 1 – Oct 31</span>
+          <ChevronDown className="w-3 h-3 text-slate-400" />
+        </div>
 
-        {/* Quick Add Lead Button */}
+        {/* Export Button Pill (from reference image) */}
+        <button
+          onClick={handleExportQuick}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800/90 border border-black/[0.06] dark:border-white/[0.08] text-xs font-medium text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        >
+          <Download className="w-3.5 h-3.5 text-slate-400" />
+          <span>Export</span>
+        </button>
+
+        {/* Solid Black Primary CTA Button (from reference image) */}
         <button
           onClick={onOpenNewLeadModal}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#EE6427] hover:bg-[#DE5518] text-white rounded-lg text-xs sm:text-sm font-semibold shadow-md shadow-[#EE6427]/25 transition-all cursor-pointer active:scale-95"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-950 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-950 font-medium rounded-xl text-xs shadow-xs transition-all cursor-pointer active:scale-95"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">New Lead</span>
         </button>
 
-        {/* Switch Agent Dropdown */}
+        {/* User Profile / Switch Agent Dropdown */}
         <div className="relative">
           <button
             onClick={() => setShowAgentMenu(!showAgentMenu)}
-            className="flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
-            title="User Profile & Roles"
+            className="flex items-center gap-1.5 p-1 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={currentUser?.avatar_url || currentAgent?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"}
               alt={currentUser?.full_name || currentAgent?.name || "User"}
-              className="w-7 h-7 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
+              className="w-7 h-7 rounded-full object-cover ring-1 ring-black/10"
             />
-            <div className="hidden md:block text-left">
-              <div className="flex items-center gap-1.5">
-                <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-none truncate max-w-[110px]">
-                  {currentUser?.full_name || currentAgent?.name || "Hamza Malik"}
-                </p>
-                {isOwner ? (
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/70 px-1 py-0.2 rounded-xs border border-purple-200 dark:border-purple-800">
-                    Owner
-                  </span>
-                ) : isManager ? (
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/70 px-1 py-0.2 rounded-xs border border-amber-200 dark:border-amber-800">
-                    Manager
-                  </span>
-                ) : (
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/70 px-1 py-0.2 rounded-xs border border-emerald-200 dark:border-emerald-800">
-                    Agent
-                  </span>
-                )}
-              </div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-none truncate max-w-[130px]">
-                {currentUser?.email || currentAgent?.email}
-              </p>
-            </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>
 
           {showAgentMenu && (
@@ -519,39 +442,20 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
                 className="fixed inset-0 z-30"
                 onClick={() => setShowAgentMenu(false)}
               />
-              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 z-40 py-1.5 text-xs divide-y divide-slate-100 dark:divide-slate-800 animate-in fade-in zoom-in-95">
-                <div className="px-3.5 py-2.5 bg-slate-50/80 dark:bg-slate-800/80">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="font-bold text-slate-900 dark:text-white truncate">
-                      {currentUser?.full_name || currentAgent?.name}
-                    </p>
-                    {isOwner ? (
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/70 px-1.5 py-0.5 rounded-xs border border-purple-200 dark:border-purple-800">
-                        Owner
-                      </span>
-                    ) : isManager ? (
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/70 px-1.5 py-0.5 rounded-xs border border-amber-200 dark:border-amber-800">
-                        Manager
-                      </span>
-                    ) : (
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/70 px-1.5 py-0.5 rounded-xs border border-emerald-200 dark:border-emerald-800">
-                        Sales Agent
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">
-                    {currentUser?.email || currentAgent?.email}
+              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-black/[0.08] dark:border-white/[0.08] z-40 py-2 text-xs divide-y divide-slate-100 dark:divide-slate-800">
+                <div className="px-3.5 py-2">
+                  <p className="font-bold text-slate-900 dark:text-white">
+                    {currentUser?.full_name || currentAgent?.name}
                   </p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                    Verified HttpOnly session
+                  <p className="text-[11px] text-slate-500 font-mono">
+                    {currentUser?.email || currentAgent?.email}
                   </p>
                 </div>
 
                 {!isAgent && agents.length > 1 && (
                   <div className="py-1">
-                    <div className="px-3 py-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                      Switch Agent View (Manager Tool)
+                    <div className="px-3 py-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                      Switch Agent View
                     </div>
                     {agents.map((agent) => (
                       <button
@@ -560,7 +464,7 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
                           setCurrentAgentId(agent.id);
                           setShowAgentMenu(false);
                         }}
-                        className="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-orange-50 dark:hover:bg-slate-800 dark:hover:bg-slate-800 transition-colors group"
+                        className="w-full flex items-center justify-between px-3 py-1.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                       >
                         <div className="flex items-center gap-2">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -569,32 +473,27 @@ export function Topbar({ onMobileOpen, onOpenNewLeadModal }: TopbarProps) {
                             alt={agent.name}
                             className="w-5 h-5 rounded-full object-cover"
                           />
-                          <div>
-                            <p className="font-semibold text-slate-800 dark:text-slate-200 group-hover:text-[#EE6427] dark:group-hover:text-orange-400 leading-tight">
-                              {agent.name}
-                            </p>
-                            <p className="text-[9px] text-slate-500 dark:text-slate-400 leading-tight">{agent.role}</p>
-                          </div>
+                          <p className="font-semibold text-slate-800 dark:text-slate-200">
+                            {agent.name}
+                          </p>
                         </div>
                         {agent.id === currentAgent?.id && (
-                          <UserCheck className="w-3.5 h-3.5 text-[#EE6427] dark:text-orange-400 shrink-0" />
+                          <UserCheck className="w-3.5 h-3.5 text-[#EE6427]" />
                         )}
                       </button>
                     ))}
                   </div>
                 )}
 
-                <div className="p-1">
+                <div className="pt-1">
                   <button
-                    type="button"
                     onClick={() => {
                       setShowAgentMenu(false);
                       logout();
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-semibold rounded-lg transition-colors text-left cursor-pointer"
+                    className="w-full text-left px-3.5 py-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors font-medium"
                   >
-                    <LogOut className="w-3.5 h-3.5" />
-                    Sign Out Securely
+                    Sign out
                   </button>
                 </div>
               </div>

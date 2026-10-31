@@ -217,40 +217,38 @@ function CommissionsContent() {
   }, [vouchers, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 pt-1">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Agent Commission & Payouts (کھاتہ)
-            </h1>
-            <span className="px-2.5 py-0.5 text-xs font-bold rounded-full bg-orange-100 dark:bg-orange-950/60 text-[#EE6427] border border-orange-200 dark:border-orange-800">
-              Hisab-Kitab Suite
-            </span>
-          </div>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Internal brokerage commission wallet, itemized deductions, advance loans, and 1-click printable payout vouchers.
+          <h1 className="font-editorial text-3xl sm:text-4xl text-slate-950 dark:text-white tracking-tight font-normal">
+            Commission Ledger
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5">
+            <span>Brokerage commission wallet & hisab-kitab</span>
+            <span>•</span>
+            <span>Deductions, advance loans & 1-click printable payout vouchers.</span>
+            <span className="text-[#EE6427] font-bold">✨</span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
             onClick={() => handleOpenAdvance()}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 hover:bg-purple-100 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800/80 hover:bg-purple-100 transition-colors cursor-pointer"
           >
-            <HandCoins className="w-4 h-4" />
-            <span>Issue Advance Loan</span>
+            <HandCoins className="w-3.5 h-3.5" />
+            <span>Issue Advance</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleOpenDisburse()}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-[#EE6427] hover:bg-[#d9551c] text-white shadow-sm transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 shadow-xs transition-all cursor-pointer active:scale-95"
           >
-            <DollarSign className="w-4 h-4" />
-            <span>Disburse Commission</span>
+            <DollarSign className="w-3.5 h-3.5" />
+            <span>Disburse Payout</span>
           </button>
         </div>
       </div>
@@ -258,7 +256,7 @@ function CommissionsContent() {
       {/* KPI Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Disbursed */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Total Disbursed (Paid Out)</p>
             <p className="text-xl font-bold text-slate-900 dark:text-white mt-1">
@@ -275,7 +273,7 @@ function CommissionsContent() {
         </div>
 
         {/* Pending Deal Commission */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+        <div className="ember-card p-5 rounded-[20px] bg-white dark:bg-slate-900 border border-black/[0.06] dark:border-white/[0.08] shadow-2xs flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Pending Deal Commission</p>
             <p className="text-xl font-bold text-[#EE6427] mt-1">
